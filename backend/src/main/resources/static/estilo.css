@@ -1,0 +1,197 @@
+/* Resetando margens e padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+}
+
+.sidebar h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+
+.sidebar ul li a:hover {
+    color: #4CAF50;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #fff;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+section {
+    display: none; /* Escondendo todas as seções inicialmente */
+    margin-bottom: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+    margin: 2%
+}
+
+form input {
+    width: 200px;
+    padding: 10px;
+    margin-right: 10px;
+    margin: 2%
+}
+
+form button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+#historico-gastos, #historico-rendas {
+    margin-top: 20px;
+}
+
+#historico-gastos p, #historico-rendas p {
+    margin-bottom: 10px;
+}
+/* Container principal para o layout */
+.container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 20px;
+}
+
+/* Estilo para o formulário de postagem */
+.form-container {
+    flex: 1;  /* Ocupa o máximo de espaço possível */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.form-container h3 {
+    margin-bottom: 15px;
+}
+
+/* Seções de Gastos e Rendas */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+#tabela-gastos tbody td, #tabela-rendas tbody td {
+    text-align: center;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Seções de histórico (visibilidade) */
+#gastosSection, #rendaSection {
+    display: none;
+}
+
+#gastosSection.active, #rendaSection.active {
+    display: block;
+}
+
+/* Estilo para mensagens de sucesso ou erro */
+#mensagem {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#mensagem.success {
+    color: green;
+}
+
+#mensagem.error {
+    color: red;
+}
