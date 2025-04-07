@@ -4,7 +4,6 @@ import com.projeto.rastreamento_de_gastos.dto.EstatisticaDTO;
 import com.projeto.rastreamento_de_gastos.dto.GraficoDTO;
 
 public interface EstatisticaService {
-    GraficoDTO pegarChartData();
-
-    EstatisticaDTO pegarEstatistica();
+    GraficoDTO pegarChartData(Long usuarioId);
+    EstatisticaDTO pegarEstatistica(Long usuarioId);
 }

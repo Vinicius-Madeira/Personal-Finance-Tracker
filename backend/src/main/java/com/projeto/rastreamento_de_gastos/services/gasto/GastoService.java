@@ -6,9 +6,9 @@ import com.projeto.rastreamento_de_gastos.dto.GastoDTO;
 import com.projeto.rastreamento_de_gastos.entity.Gasto;
 
 public interface GastoService{
-    Gasto postarGasto(GastoDTO gastoDTO);
+    public Gasto postarGasto(GastoDTO gastoDTO, Long usuarioId);
 
-    List<Gasto> pegarTodosOsGastos();
+    List<Gasto> pegarTodosOsGastos(Long usuarioId);
 
     Gasto pegarGastopeloID(Long id);
 

@@ -17,4 +17,6 @@ public class GastoDTO {
     private LocalDate data;
     
     private Integer valor;
+
+    private Long usuarioId;
 }

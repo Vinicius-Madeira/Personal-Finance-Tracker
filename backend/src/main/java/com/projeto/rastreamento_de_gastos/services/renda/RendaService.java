@@ -7,13 +7,13 @@ import com.projeto.rastreamento_de_gastos.entity.Renda;
 
 public interface RendaService {
 
-    Renda postarRenda(RendaDTO rendaDTO);
+    public Renda postarRenda(RendaDTO rendaDTO, Long usuarioId);
 
-    List<RendaDTO> pegarTodaRenda();
+    List<Renda> pegarTodaRenda(Long usuarioId);
 
     Renda atualizarRenda(Long id, RendaDTO rendaDTO);
 
-    RendaDTO pegarRendaPeloID(Long id);
+    Renda pegarRendaPeloID(Long id);
 
     void deletarRenda(Long id);
 
