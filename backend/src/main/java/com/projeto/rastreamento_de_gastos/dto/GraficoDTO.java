@@ -13,4 +13,6 @@ public class GraficoDTO {
     private List<Gasto> listaGasto;
 
     private List<Renda> listaRenda;
+
+    private List<GastoPorCategoria> gastosPorCategoria;
 }

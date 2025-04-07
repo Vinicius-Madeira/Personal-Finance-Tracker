@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.projeto.rastreamento_de_gastos.dto.EstatisticaDTO;
+import com.projeto.rastreamento_de_gastos.dto.GastoPorCategoria;
 import com.projeto.rastreamento_de_gastos.dto.GraficoDTO;
 import com.projeto.rastreamento_de_gastos.entity.Gasto;
 import com.projeto.rastreamento_de_gastos.entity.Renda;
@@ -23,36 +25,53 @@ public class EstatisticaServiceImpl implements EstatisticaService{
 
     private final GastoRepository gastoRepository;
 
-    public GraficoDTO pegarChartData(){
+    public GraficoDTO pegarChartData(Long usuarioId) {
+    // Verificando se o ID do usuário está correto
+    System.out.println("ID do usuário logado: " + usuarioId);
+
         LocalDate dataFinal = LocalDate.now();
-        LocalDate dataInicial = dataFinal.minusDays(27);
+        LocalDate dataInicial = dataFinal.minusDays(365);
+
+        // Filtra os dados pelo usuarioId
+        List<Gasto> listaGasto = gastoRepository.findByUsuarioIdAndDataBetween(usuarioId, dataInicial, dataFinal);
+        List<Renda> listaRenda = rendaRepository.findByUsuarioIdAndDataBetween(usuarioId, dataInicial, dataFinal);
+
+        System.out.println("Lista de Gastos: " + listaGasto);
+
+        List<GastoPorCategoria> gastosPorCategoria = listaGasto.stream()
+            .collect(Collectors.groupingBy(Gasto::getCategoria, Collectors.summingDouble(Gasto::getValor)))
+            .entrySet().stream()
+            .map(entry -> new GastoPorCategoria(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+
+        System.out.println("Gastos por Categoria: " + gastosPorCategoria);
 
         GraficoDTO graficoDTO = new GraficoDTO();
-        graficoDTO.setListaGasto(gastoRepository.findByDataBetween(dataInicial, dataFinal));
-        graficoDTO.setListaRenda(rendaRepository.findByDataBetween(dataInicial, dataFinal));
+        graficoDTO.setListaGasto(listaGasto);
+        graficoDTO.setListaRenda(listaRenda);
+        graficoDTO.setGastosPorCategoria(gastosPorCategoria);
 
         return graficoDTO;
     }
 
-    public EstatisticaDTO pegarEstatistica(){
-        Double rendaTotal = rendaRepository.somarValorTotal();
-        Double gastoTotal = gastoRepository.somarValorTotal();
+    public EstatisticaDTO pegarEstatistica(Long usuarioId) {
+        Double rendaTotal = rendaRepository.somarValorTotalPorUsuario(usuarioId);
+        Double gastoTotal = gastoRepository.somarValorTotalPorUsuario(usuarioId);
 
-        Optional<Renda> rendaOpcional = rendaRepository.findFirstByOrderByDataDesc();
-        Optional<Gasto> gastoOptional = gastoRepository.findFirstByOrderByDataDesc();
+        Optional<Renda> rendaOpcional = rendaRepository.findFirstByUsuarioIdOrderByDataDesc(usuarioId);
+        Optional<Gasto> gastoOptional = gastoRepository.findFirstByUsuarioIdOrderByDataDesc(usuarioId);
 
         EstatisticaDTO estatisticaDTO = new EstatisticaDTO();
         estatisticaDTO.setGasto(gastoTotal);
         estatisticaDTO.setRenda(rendaTotal);
 
         rendaOpcional.ifPresent(estatisticaDTO::setUltimaRenda);
-
         gastoOptional.ifPresent(estatisticaDTO::setUltimoGasto);
 
-        estatisticaDTO.setBalanço(rendaTotal-gastoTotal);
+        estatisticaDTO.setBalanço(rendaTotal - gastoTotal);
 
-        List<Renda> listaRenda = rendaRepository.findAll();
-        List<Gasto> listaGasto = gastoRepository.findAll();
+        List<Renda> listaRenda = rendaRepository.findByUsuarioId(usuarioId);
+        List<Gasto> listaGasto = gastoRepository.findByUsuarioId(usuarioId);
 
         OptionalDouble minRenda = listaRenda.stream().mapToDouble(Renda::getValor).min();
         OptionalDouble maxRenda = listaRenda.stream().mapToDouble(Renda::getValor).max();
@@ -67,6 +86,5 @@ public class EstatisticaServiceImpl implements EstatisticaService{
         estatisticaDTO.setMinRenda(minRenda.isPresent() ? minRenda.getAsDouble() : null); 
 
         return estatisticaDTO;
-
     }
 }

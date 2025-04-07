@@ -1,5 +1,7 @@
 package com.projeto.rastreamento_de_gastos.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,9 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.projeto.rastreamento_de_gastos.dto.RendaDTO;
 import com.projeto.rastreamento_de_gastos.entity.Renda;
+import com.projeto.rastreamento_de_gastos.entity.Usuario;
+import com.projeto.rastreamento_de_gastos.exceptions.ErrorResponse;
 import com.projeto.rastreamento_de_gastos.services.renda.RendaService;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,20 +33,48 @@ public class RendaController {
 
     private final RendaService rendaService;
 
-    @PostMapping
-    public ResponseEntity<?> postarRenda(@RequestBody RendaDTO rendaDTO){
-        Renda criarRenda = rendaService.postarRenda(rendaDTO);
-        if(criarRenda != null){
-            return ResponseEntity.status(HttpStatus.CREATED).body(criarRenda);
-        }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
+        @PostMapping
+        public ResponseEntity<?> postarRenda(@RequestBody RendaDTO dto, HttpSession session){
+        // Obtendo o usuário logado da sessão
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
 
-    @GetMapping("/all")
-    public ResponseEntity<?> pegarTodaRenda(){
-        return ResponseEntity.ok(rendaService.pegarTodaRenda());
-    }
+        if (usuarioLogado == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            new ErrorResponse("Usuário não autenticado")
+        );
+        }
+
+        // Atribuindo o ID do usuário autenticado ao DTO
+        dto.setUsuarioId(usuarioLogado.getId());  // Usando o ID do usuário logado
+    
+        // Passando o ID do usuário como argumento
+        Renda rendaCriada = rendaService.postarRenda(dto, usuarioLogado.getId());
+
+        if (rendaCriada != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(rendaCriada);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+
+
+        @GetMapping("/all")
+        public ResponseEntity<?> pegarTodaRenda(HttpSession session) {
+            // Obtendo o usuário logado da sessão
+            Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+        
+            if (usuarioLogado == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ErrorResponse("Usuário não autenticado")
+                );
+            }
+        
+            // Passando o ID do usuário logado para o serviço
+            List<Renda> rendas = rendaService.pegarTodaRenda(usuarioLogado.getId());
+        
+            return ResponseEntity.ok(rendas);
+        }
+        
 
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizarRenda(@PathVariable Long id, @RequestBody RendaDTO rendaDTO){

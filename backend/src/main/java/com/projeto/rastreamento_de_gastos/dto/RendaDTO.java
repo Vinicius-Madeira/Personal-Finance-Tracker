@@ -17,4 +17,6 @@ public class RendaDTO {
     private String categoria;
 
     private String descricao;
+
+    private Long usuarioId;
 }
