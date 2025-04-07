@@ -1,0 +1,48 @@
+{
+  "incomes": [
+    {
+      "id": 1,
+      "title": "Salário",
+      "date": "2025-03-31",
+      "value": 24451.12
+    },
+    {
+      "id": 2,
+      "title": "Investimentos",
+      "date": "2025-03-13",
+      "value": 4834.09
+    },
+    {
+      "id": 3,
+      "title": "Salário",
+      "date": "2025-02-31",
+      "value": 22988.01
+    },
+    {
+      "id": 4,
+      "title": "Salário",
+      "date": "2025-01-31",
+      "value": 18128.53
+    },
+    {
+      "id": 5,
+      "title": "Salário",
+      "date": "2024-12-31",
+      "value": 15926.16
+    }
+  ],
+  "expenses": [
+    {
+      "id": 1,
+      "title": "Ativos",
+      "date": "30/03/2025",
+      "value": "7,281,98"
+    },
+    {
+      "id": 2,
+      "title": "Impostos",
+      "date": "15/03/2025",
+      "value": "9,733,40"
+    }
+  ]
+}

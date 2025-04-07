@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <>
-      <div className="grid grid-rows-[20px_1fr_20px] justify-items-center p-4 font-[family-name:var(--font-quicksand)]">
+      <div className="grid grid-rows-[20px_1fr_20px] justify-items-center p-4">
         <main className="flex flex-col gap-4 w-250 text-center">
           <h1 className="font-bold text-7xl">
             Monitore suas despesas com clareza

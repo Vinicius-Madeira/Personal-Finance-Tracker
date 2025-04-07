@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Footer from "@/components/Footer";
 
 const quicksand = Quicksand({
   variable: "--font-quicksand",
@@ -23,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={`${quicksand.variable} antialiased`}>
+      <body
+        className={`${quicksand.variable} antialiased font-[family-name:var(--font-quicksand)]`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
