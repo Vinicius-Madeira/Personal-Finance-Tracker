@@ -7,16 +7,16 @@ interface publicRoute {
 
 const publicRoutes: publicRoute[] = [
   { path: "/", whenAuthenticated: "next" },
-  { path: "/auth", whenAuthenticated: "redirect" },
+  { path: "/login", whenAuthenticated: "redirect" },
+  { path: "/signup", whenAuthenticated: "redirect" },
 ];
 
-const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/auth";
+const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/login";
 
 export function middleware(request: NextRequest) {
-  return; // authentication flow will be available at V2.0
   const path = request.nextUrl.pathname;
   const publicRoute = publicRoutes.find((route) => route.path === path);
-  const authToken = request.cookies.get("token");
+  const authToken = request.cookies.get("JSESSIONID");
 
   if (!authToken && publicRoute) {
     return NextResponse.next();
@@ -42,7 +42,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (authToken && !publicRoute) {
-    // Check if JWT is expired
+    // Check if token is expired
 
     return NextResponse.next();
   }

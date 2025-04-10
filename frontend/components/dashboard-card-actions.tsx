@@ -13,7 +13,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -40,21 +39,19 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 
-interface DashboardCardProps {
-  title: string;
-  date: Date;
-  value: number;
-}
+type DashboardCardProps = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
   title: z
-    .string()
+    .string({ message: "Campo requirido." })
     .min(3, {
       message: "O título requer pelo menos 3 caracteres.",
     })
     .max(50),
-  date: z.date(),
-  value: z.number().nonnegative(),
+  date: z.date({ message: "Campo requirido." }),
+  value: z
+    .number({ message: "Campo requirido." })
+    .nonnegative({ message: "O número deve ser maior que 0." }),
 });
 
 export default function DashboardCardActions({
@@ -66,12 +63,13 @@ export default function DashboardCardActions({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title,
-      date,
+      date: date instanceof Date ? date : new Date(date),
       value,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    // const formattedDate = values.date.toISOString().split("T")[0];
     console.log(values);
   }
 
@@ -99,7 +97,7 @@ export default function DashboardCardActions({
                   <FormItem>
                     <FormLabel>Título</FormLabel>
                     <FormControl>
-                      <Input defaultValue={field.value} {...field} />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +152,12 @@ export default function DashboardCardActions({
                   <FormItem>
                     <FormLabel>Valor</FormLabel>
                     <FormControl>
-                      <Input defaultValue={field.value} {...field} />
+                      <Input
+                        type="number"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

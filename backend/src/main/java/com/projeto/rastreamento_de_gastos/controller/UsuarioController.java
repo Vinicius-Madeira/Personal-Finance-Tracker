@@ -3,10 +3,10 @@ package com.projeto.rastreamento_de_gastos.controller;
 import java.security.NoSuchAlgorithmException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.projeto.rastreamento_de_gastos.entity.Usuario;
@@ -19,95 +19,67 @@ import com.projeto.rastreamento_de_gastos.util.Util;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-@Controller
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@RestController
 public class UsuarioController {
 
     @Autowired
     private ServiceUsuario serviceUsuario;
 
-    @GetMapping("/login")
-    public ModelAndView login(){
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("login/login");
-        mv.addObject("usuario", new Usuario());
-        return mv;
-    }
+    @PostMapping("/signup")
+    public ResponseEntity<?> cadastrar(@RequestBody @Valid Usuario usuario, BindingResult br) {
+        if (br.hasErrors()) {
+            return ResponseEntity.badRequest().body("Dados inválidos.");
+        }
 
-    @GetMapping("/index")
-public ModelAndView index(){
-    ModelAndView mv = new ModelAndView();
-    mv.setViewName("index");
-    return mv;
-}
-
-
-    @GetMapping("/cadastro")
-    public ModelAndView cadastrar(){
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("usuario", new Usuario());
-        mv.setViewName("login/cadastro");
-        return mv;
-    }
-
-    @PostMapping("/salvarUsuario")
-    public ModelAndView cadastrar(Usuario usuario) {
-        ModelAndView mv = new ModelAndView();
         try {
             serviceUsuario.salvarUsuario(usuario);
-            mv.setViewName("redirect:/login");
+            return ResponseEntity.ok("Usuário cadastrado com sucesso.");
         } catch (EmailExistsException e) {
-            mv.addObject("erro", e.getMessage()); // Adiciona mensagem de erro para exibir na tela
-            mv.setViewName("login/cadastro"); // Retorna à página de cadastro
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (CriptoExistsException e) {
-            mv.addObject("erro", "Erro ao criptografar senha.");
-            mv.setViewName("login/cadastro");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criptografar senha.");
         }
-        return mv;
     }
 
     @PostMapping("/login")
-    public ModelAndView loginUsuario(@Valid Usuario usuario, BindingResult br, HttpSession session) throws NoSuchAlgorithmException, ServiceExc {
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("usuario", usuario);  // Mantém os dados preenchidos no formulário
-        
+    public ResponseEntity<?> login(@RequestBody @Valid Usuario usuario, BindingResult br, HttpSession session) {
         if (br.hasErrors()) {
-            mv.setViewName("login/login");
-            return mv;
+            return ResponseEntity.badRequest().body("Dados inválidos.");
         }
-        
-        try {
-            // Busca o usuário pelo nome
-            Usuario userLogin = serviceUsuario.findByUser(usuario.getUser());
-    
-            if (userLogin == null) {
-                mv.addObject("msg", "Usuário não encontrado. Tente novamente");
-                mv.setViewName("login/login");
-            } else {
-                // Criptografa a senha digitada pelo usuário
-                String senhaCriptografada = Util.md5(usuario.getSenha());
-    
-                if (!userLogin.getSenha().equals(senhaCriptografada)) {
-                    mv.addObject("msg", "Senha incorreta. Tente novamente");
-                    mv.setViewName("login/login");
-                } else {
-                    session.setAttribute("usuarioLogado", userLogin);
-                    mv.setViewName("redirect:/index");
-                }
-            }
-        } catch (Exception e) {
-            mv.addObject("msg", "Ocorreu um erro inesperado. Tente novamente.");
-            mv.setViewName("login/login");
-            e.printStackTrace();
-        }
-        
-        return mv;
-    }
-    
-    @PostMapping("/logout")
-    public ModelAndView logout(HttpSession session) {
 
+        try {
+            Usuario userLogin = serviceUsuario.findByEmail(usuario.getEmail());
+
+            if (userLogin == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não encontrado. Tente novamente.");
+            }
+
+            String senhaCriptografada = Util.md5(usuario.getSenha());
+
+            if (!userLogin.getSenha().equals(senhaCriptografada)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha incorreta. Tente novamente.");
+            }
+
+            // Aqui, se quiser retornar o usuário sem a senha:
+            userLogin.setSenha(null);
+            session.setAttribute("usuarioLogado", userLogin);
+
+            return ResponseEntity.ok(userLogin);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ocorreu um erro inesperado. Tente novamente.");
+        }
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
         session.invalidate();
-        return login();
+        System.out.println("Logout realizado com sucesso!");
+        return ResponseEntity.ok("Logout realizado com sucesso.");
     }
 
 }

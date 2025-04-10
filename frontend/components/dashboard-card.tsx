@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import DashboardCardActions from "./DashboardCardActions";
+import DashboardCardActions from "./dashboard-card-actions";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { currency } from "@/utils/format";

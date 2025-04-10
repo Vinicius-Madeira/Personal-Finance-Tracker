@@ -1,5 +1,9 @@
-import DashboardCard from "@/components/DashboardCard";
-import CustomPieChart from "./CustomPieChart";
+import DashboardCard from "@/components/dashboard-card";
+import CustomPieChart from "./dashboard-pie-chart";
+import CustomBarChart from "./dashboard-bar-chart";
+import { Button } from "@/components/ui/button";
+import { ListPlus } from "lucide-react";
+import DashboardAddForm from "@/components/dashboard-add-form";
 
 interface Income {
   title: string;
@@ -12,6 +16,7 @@ export default async function IncomesTab() {
   const incomes = (await data.json()) as Income[];
   return (
     <>
+      <DashboardAddForm />
       <div id="cards" className="grid grid-cols-5 gap-4 mt-8">
         {incomes.map((income) => (
           <DashboardCard
@@ -22,8 +27,9 @@ export default async function IncomesTab() {
           />
         ))}
       </div>
-      <div id="charts" className="grid grid-cols-2 mt-8 ml-[30%]">
+      <div id="charts" className="grid grid-cols-2 mt-4 gap-4">
         <CustomPieChart incomes={incomes} />
+        <CustomBarChart incomes={incomes} />
       </div>
     </>
   );
