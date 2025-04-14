@@ -75,7 +75,6 @@ export default function DashboardAddForm() {
 
   return (
     <Dialog>
-      <Toaster closeButton duration={4000} position="top-center" />
       <DialogTrigger asChild>
         <Button className="absolute left-100 top-24">
           Nova Renda

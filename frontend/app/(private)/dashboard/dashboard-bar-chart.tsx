@@ -1,70 +1,131 @@
 "use client";
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Income } from "../types";
+import { useMemo } from "react";
 
-interface ChartData {
-  month: string;
-  income: number;
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
 }
-const chartData: ChartData[] = [
-  { month: "January", income: 186 },
-  { month: "February", income: 305 },
-  { month: "March", income: 237 },
-  { month: "April", income: 73 },
-  { month: "May", income: 209 },
-  { month: "June", income: 214 },
-];
-const chartConfig = {
-  desktop: {
-    label: "Income",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig;
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-neutral-900 p-4 rounded shadow border border-purple-200">
+        <p className="font-mono text-sm text-green-500">{`R$${payload[0].value.toLocaleString(
+          "pt-BR"
+        )}`}</p>
+        <p className="text-xs text-gray-200">{`${payload[0].payload.count} renda(s)`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+interface MonthlyData {
+  name: string;
+  year: number;
+  timestamp: number;
+  value: number;
+  count: number;
+  month: string; // For display on the x-axis
+}
+
+type MonthlyMap = {
+  [monthYear: string]: MonthlyData;
+};
 
 interface CustomBarChartProps {
   incomes: Income[];
+  monthLimit?: number;
 }
 
-export default function CustomBarChart({ incomes }: CustomBarChartProps) {
+export default function CustomBarChart({
+  incomes,
+  monthLimit = 6,
+}: CustomBarChartProps) {
+  // Process data to aggregate by month
+  const aggregatedData = useMemo(() => {
+    // Create a map to store monthly totals and entry counts
+    const monthlyMap: MonthlyMap = {};
+
+    // Process each income entry
+    incomes.forEach((entry) => {
+      const date = new Date(entry.data);
+      const monthYear = date.toLocaleString("pt-BR", {
+        month: "long",
+        year: "numeric",
+      });
+
+      if (!monthlyMap[monthYear]) {
+        monthlyMap[monthYear] = {
+          name: date.toLocaleString("pt-BR", { month: "long" }),
+          month: date.toLocaleString("pt-BT", { month: "short" }),
+          year: date.getFullYear(),
+          timestamp: date.getTime(), // For sorting
+          value: 0,
+          count: 0,
+        };
+      }
+
+      monthlyMap[monthYear].value += entry.valor;
+      monthlyMap[monthYear].count += 1;
+    });
+
+    // Convert map to array and sort by date (newest first)
+    let result = Object.values(monthlyMap);
+    result.sort((a, b) => b.timestamp - a.timestamp);
+
+    // Limit to the specified number of months
+    return result.slice(0, monthLimit);
+  }, [incomes, monthLimit]);
+
+  // Format value for Y-axis
+  const formatYAxis = (value: number) => {
+    if (value >= 1000) {
+      return `R$${value / 1000}k`;
+    }
+    return `R$${value}`;
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-center text-2xl">Renda Mensal</CardTitle>
-        <CardDescription className="text-center">
-          January - June 2024
-        </CardDescription>
+        <CardDescription className="text-center"></CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+        <ChartContainer config={{}}>
+          <BarChart accessibilityLayer data={aggregatedData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value, index) => {
+                // Show month and year (e.g., "Jan '24")
+                const item = aggregatedData[index];
+                return `${item.month} ${String(item.year).slice(-2)}`;
+              }}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="income" fill="var(--chart-2)" radius={8} />
+            <YAxis tickFormatter={formatYAxis} />
+            <ChartTooltip cursor={false} content={<CustomTooltip />} />
+            <Bar dataKey="value" fill="var(--chart-2)" radius={8} />
           </BarChart>
         </ChartContainer>
       </CardContent>

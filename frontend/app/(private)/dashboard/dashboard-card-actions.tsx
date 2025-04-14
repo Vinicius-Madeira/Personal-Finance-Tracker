@@ -60,7 +60,6 @@ export default function DashboardCardActions({ income }: DashboardCardProps) {
   return (
     <div id="action-buttons">
       <Dialog>
-        <Toaster closeButton duration={4000} position="top-center" />
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon">
             <Pen />
