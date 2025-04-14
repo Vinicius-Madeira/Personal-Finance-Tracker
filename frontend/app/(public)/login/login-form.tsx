@@ -24,6 +24,9 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { frontendURL } from "@/utils/api";
+import { useState } from "react";
+import { Toaster } from "sonner";
+import { showErrorToast } from "@/components/error-toast";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -31,8 +34,12 @@ const formSchema = z.object({
 });
 
 type FormSchema = z.infer<typeof formSchema>;
+type RequestStatus = "idle" | "pending" | "success" | "error";
 
 export default function LoginForm() {
+  const [submitStatus, setSubmitStatus] = useState<RequestStatus>("idle");
+  const router = useRouter();
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,21 +47,29 @@ export default function LoginForm() {
       senha: "",
     },
   });
-  const router = useRouter();
 
   async function onSubmit(values: FormSchema) {
+    setSubmitStatus("pending");
     const response = await fetch(`${frontendURL}/api/login`, {
       method: "POST",
       body: JSON.stringify(values),
     });
 
     if (response.ok) {
+      // setSubmitStatus("success");
       router.push("/dashboard");
+    } else {
+      setSubmitStatus("error");
+      showErrorToast(
+        "Usuário ou senha incorreto(s).",
+        "Por favor, tente novamente."
+      );
     }
   }
 
   return (
     <div className={cn("flex flex-col gap-6")}>
+      <Toaster closeButton duration={3000} position="top-center" />
       <Card>
         <CardHeader>
           <CardTitle>Entre na sua conta</CardTitle>
@@ -89,8 +104,12 @@ export default function LoginForm() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full mt-2">
-                Login
+              <Button
+                type="submit"
+                className="w-full mt-2"
+                disabled={submitStatus === "pending"}
+              >
+                {submitStatus === "pending" ? "Fazendo login..." : "Login"}
               </Button>
               <div className="mt-4 text-center text-sm">
                 Não tem uma conta?

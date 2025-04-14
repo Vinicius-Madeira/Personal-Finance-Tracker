@@ -15,12 +15,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { currencyNoCents } from "@/utils/format";
-
-interface Income {
-  title: string;
-  date: Date;
-  value: number;
-}
+import { Income } from "../types";
 
 interface CustomPieChartProps {
   incomes: Income[];
@@ -35,7 +30,7 @@ export default function CustomPieChart({ incomes }: CustomPieChartProps) {
     const chartIncomes = incomes.slice(incomes.length - limit, incomes.length);
     chartData = chartIncomes.map((income, index) => {
       return {
-        value: income.value,
+        value: income.valor,
         fill: `var(--chart-${index + 1})`,
       };
     });
@@ -60,8 +55,8 @@ export default function CustomPieChart({ incomes }: CustomPieChartProps) {
   };
 
   const totalValue = useMemo(() => {
-    return incomes.reduce((acc, curr) => acc + curr.value, 0);
-  }, []);
+    return incomes.reduce((acc, curr) => acc + curr.valor, 0);
+  }, [incomes]);
 
   return (
     <Card className="flex flex-col">

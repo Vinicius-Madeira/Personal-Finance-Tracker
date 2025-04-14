@@ -1,7 +1,7 @@
 import CustomChart from "@/components/homepage-bar-chart";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import Footer from "@/components/footer";
+import HomeButtons from "./home-buttons";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -15,12 +15,9 @@ export default function Home() {
             Gráficos dinâmicos para facilitar sua gestão
           </p>
           <div className="flex gap-4 my-2 justify-center">
-            <Button asChild className="px-6 h-12 text-lg rounded-xl">
-              <Link href="/signup">Cadastrar</Link>
-            </Button>
-            <Button asChild className="px-6 h-12 text-lg rounded-xl">
-              <Link href="/login">Login</Link>
-            </Button>
+            <Suspense fallback={<div>Carregando...</div>}>
+              <HomeButtons />
+            </Suspense>
           </div>
           <CustomChart />
           <Footer />

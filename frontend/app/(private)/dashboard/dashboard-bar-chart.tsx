@@ -15,6 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Income } from "../types";
 
 interface ChartData {
   month: string;
@@ -34,12 +35,6 @@ const chartConfig = {
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
-
-interface Income {
-  title: string;
-  date: Date;
-  value: number;
-}
 
 interface CustomBarChartProps {
   incomes: Income[];

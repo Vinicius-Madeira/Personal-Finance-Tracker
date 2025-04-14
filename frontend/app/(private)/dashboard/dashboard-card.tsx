@@ -4,36 +4,31 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
+} from "../../../components/ui/card";
 import DashboardCardActions from "./dashboard-card-actions";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { currency } from "@/utils/format";
+import { currency, parseLocalDate } from "@/utils/format";
+import { Income } from "../types";
 
 interface DashboardCardProps {
-  title: string;
-  date: Date;
-  value: number;
+  income: Income;
 }
 
-export default function DashboardCard({
-  title,
-  date,
-  value,
-}: DashboardCardProps) {
+export default function DashboardCard({ income }: DashboardCardProps) {
   return (
     <Card>
       <CardHeader className="flex justify-between">
-        <CardTitle className="truncate">{title}</CardTitle>
+        <CardTitle className="truncate">{income.titulo}</CardTitle>
         <CardDescription className="text-xs">
-          {format(date, "P", { locale: ptBR })}
+          {format(parseLocalDate(income.data), "P", { locale: ptBR })}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-between">
         <span className="text-bold text-green-400">{`${currency.format(
-          value
+          income.valor
         )}`}</span>
-        <DashboardCardActions title={title} date={date} value={value} />
+        <DashboardCardActions income={income} />
       </CardContent>
     </Card>
   );

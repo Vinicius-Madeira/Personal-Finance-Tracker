@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Dialog } from "@radix-ui/react-dialog";
 import {
   DialogContent,
@@ -9,8 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
+} from "../../../components/ui/dialog";
+import { Button } from "../../../components/ui/button";
 import { CalendarIcon, ListPlus } from "lucide-react";
 import {
   Form,
@@ -19,47 +18,64 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+} from "../../../components/ui/form";
+import { Input } from "../../../components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar } from "./ui/calendar";
+import { Calendar } from "../../../components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { useForm } from "react-hook-form";
+import { formSchema, FormSchema } from "./schema";
+import { createIncome } from "./actions";
+import { useActionState, useEffect, useState } from "react";
+import Spinner from "@/components/spinner";
+import { Toaster } from "sonner";
+import { showErrorToast } from "@/components/error-toast";
+import { showSuccessToast } from "@/components/success-toast";
+import { BRLCurrencyInput } from "@/components/currency-input";
 
-const formSchema = z.object({
-  title: z
-    .string({ message: "Campo requirido." })
-    .min(3, {
-      message: "O título requer pelo menos 3 caracteres.",
-    })
-    .max(50),
-  date: z.date({ message: "Campo requirido." }),
-  value: z
-    .number({ message: "Campo requirido." })
-    .nonnegative({ message: "O número deve ser maior que 0." }),
-});
+export default function DashboardAddForm() {
+  const [state, formAction] = useActionState(createIncome, {
+    status: "",
+    message: "",
+  });
+  const [isPending, setIsPending] = useState(false);
 
-type FormSchema = z.infer<typeof formSchema>;
-
-type DashboardAddFormProps = {};
-
-export default function DashboardAddForm({}: DashboardAddFormProps) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      date: undefined,
-      value: undefined,
+      titulo: "",
+      data: new Date(),
+      valor: 0,
+      categoria: "",
+      descricao: "",
     },
   });
 
-  function onSubmit(values: FormSchema) {
-    console.log(values);
+  async function onSubmit(values: FormData) {
+    setIsPending(false);
+    formAction(values);
   }
+
+  useEffect(() => {
+    if (state.status === "success") {
+      showSuccessToast(state.message);
+      setIsPending(false);
+    }
+    if (state.status === "error") {
+      showErrorToast(state.message, "Por favor, tente novamente.");
+      setIsPending(false);
+    }
+  }, [state]);
+
   return (
     <Dialog>
+      <Toaster closeButton duration={4000} position="top-center" />
       <DialogTrigger asChild>
         <Button className="absolute left-100 top-24">
           Nova Renda
@@ -69,20 +85,18 @@ export default function DashboardAddForm({}: DashboardAddFormProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Nova Renda</DialogTitle>
-          <DialogDescription>
-            Adicione uma nova renda nos campos abaixo
-          </DialogDescription>
+          <DialogDescription>Preencha os campos abaixo</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form action={onSubmit} className="space-y-8">
             <FormField
               control={form.control}
-              name="title"
+              name="titulo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Título</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} placeholder="Investimento" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -90,10 +104,44 @@ export default function DashboardAddForm({}: DashboardAddFormProps) {
             />
             <FormField
               control={form.control}
-              name="date"
+              name="descricao"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Investimento referente à bolsa de valores..."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="categoria"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Passivos" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="data"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Data</FormLabel>
+                  <input
+                    type="hidden"
+                    name="data"
+                    value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                  />
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -133,24 +181,22 @@ export default function DashboardAddForm({}: DashboardAddFormProps) {
 
             <FormField
               control={form.control}
-              name="value"
+              name="valor"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Valor</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    />
+                    <BRLCurrencyInput name="valor" control={form.control} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type="submit">Enviar</Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Salvando..." : "Salvar"}
+              {isPending && <Spinner />}
+            </Button>
           </form>
         </Form>
       </DialogContent>

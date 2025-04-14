@@ -13,19 +13,17 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify(body),
   });
 
-  const backendBody = await backendRes.json();
-
   if (!backendRes.ok) {
     return NextResponse.json(
-      { message: backendBody.message || "Login failed" },
+      { message: "Login failed" },
       { status: backendRes.status }
     );
   }
+  const backendBody = await backendRes.json();
+
+  const response = NextResponse.json(backendBody);
 
   const cookie = backendRes.headers.get("set-cookie");
-
-  const response = NextResponse.json({ success: true });
-
   if (cookie) {
     response.headers.set("Set-Cookie", cookie);
   }
