@@ -31,13 +31,13 @@ import { Calendar } from "../../../components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { useForm } from "react-hook-form";
 import { formSchema, FormSchema } from "./schema";
-import { createIncome } from "./actions";
 import { useActionState, useEffect, useState } from "react";
 import Spinner from "@/components/spinner";
 import { Toaster } from "sonner";
 import { showErrorToast } from "@/components/error-toast";
 import { showSuccessToast } from "@/components/success-toast";
 import { BRLCurrencyInput } from "@/components/currency-input";
+import { createIncome } from "./actions/createIncome";
 
 export default function DashboardAddForm() {
   const [state, formAction] = useActionState(createIncome, {
@@ -82,7 +82,7 @@ export default function DashboardAddForm() {
           <ListPlus />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-100">
         <DialogHeader>
           <DialogTitle>Nova Renda</DialogTitle>
           <DialogDescription>Preencha os campos abaixo</DialogDescription>
