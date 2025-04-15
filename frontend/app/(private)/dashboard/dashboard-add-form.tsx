@@ -31,9 +31,8 @@ import { Calendar } from "../../../components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { useForm } from "react-hook-form";
 import { formSchema, FormSchema } from "./schema";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 import Spinner from "@/components/spinner";
-import { Toaster } from "sonner";
 import { showErrorToast } from "@/components/error-toast";
 import { showSuccessToast } from "@/components/success-toast";
 import { BRLCurrencyInput } from "@/components/currency-input";
@@ -44,7 +43,7 @@ export default function DashboardAddForm() {
     status: "",
     message: "",
   });
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -57,19 +56,23 @@ export default function DashboardAddForm() {
     },
   });
 
-  async function onSubmit(values: FormData) {
-    setIsPending(false);
-    formAction(values);
+  async function onSubmit(values: FormSchema) {
+    const formData = new FormData();
+
+    for (const [key, value] of Object.entries(values)) {
+      formData.append(key, value.toString());
+    }
+    formData.set("data", new Date(values.data).toISOString().split("T")[0]);
+
+    startTransition(() => formAction(formData));
   }
 
   useEffect(() => {
     if (state.status === "success") {
       showSuccessToast(state.message);
-      setIsPending(false);
     }
     if (state.status === "error") {
       showErrorToast(state.message, "Por favor, tente novamente.");
-      setIsPending(false);
     }
   }, [state]);
 
@@ -87,7 +90,7 @@ export default function DashboardAddForm() {
           <DialogDescription>Preencha os campos abaixo</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form action={onSubmit} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="titulo"
@@ -166,10 +169,10 @@ export default function DashboardAddForm() {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
+                        defaultMonth={field.value}
                         disabled={(date) =>
                           date > new Date() || date < new Date("2000-01-01")
                         }
-                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>

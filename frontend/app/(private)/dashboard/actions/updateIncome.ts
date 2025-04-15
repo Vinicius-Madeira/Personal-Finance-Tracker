@@ -18,15 +18,10 @@ export async function updateIncome(prevState: any, formData: FormData) {
     return { status: "error", message: "Falha ao atualizar a renda." };
   }
 
-  // workaround to deal with integers on back-end
-  const value = Number(
-    (formData.get("valor") as string).replace(".", "").replace(",", ".")
-  );
-
   const updatedIncome = {
     titulo: formData.get("titulo"),
     data: formData.get("data"),
-    valor: value,
+    valor: Number(formData.get("valor")),
     categoria: formData.get("categoria"),
     descricao: formData.get("descricao"),
   };

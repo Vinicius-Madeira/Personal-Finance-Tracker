@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { useController, Control } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -31,62 +33,62 @@ export const BRLCurrencyInput: React.FC<CurrencyInputProps> = ({
     defaultValue: "",
   });
 
-  // Format the value to display with comma as decimal separator
-  const formatToBRL = (value: string | number): string => {
-    if (value === "" || value === undefined || value === null) return "";
+  // Track the raw numeric value (in cents) internally
+  const [rawValue, setRawValue] = useState(() => {
+    // Initialize from field value if available
+    if (field.value !== undefined && field.value !== "") {
+      return Math.round(field.value * 100);
+    }
+    return 0;
+  });
 
-    // Convert to string and ensure it's a valid number format
-    let numStr = String(value).replace(/[^\d]/g, "");
+  // Format a cents value to BRL display format
+  const formatCentsToBRL = (cents: number): string => {
+    if (cents === 0) return "0,00";
 
-    // Convert to cents (integer representation)
-    const cents = numStr === "" ? 0 : parseInt(numStr, 10);
+    // Convert to string and ensure it has at least 3 digits
+    let valueStr = cents.toString().padStart(3, "0");
 
-    // Convert cents to real value with 2 decimal places
-    const realValue = (cents / 100).toFixed(2);
+    // Extract decimal part (last 2 digits)
+    const decimalPart = valueStr.slice(-2);
 
-    // Split into integer and decimal parts
-    const [intPart, decPart] = realValue.split(".");
+    // Get integer part
+    const integerPart = valueStr.slice(0, -2);
 
-    // Format integer part with thousand separators (dots)
-    let formattedInt = "";
-    for (let i = 0; i < intPart.length; i++) {
-      if (i > 0 && (intPart.length - i) % 3 === 0) {
-        formattedInt += ".";
+    // Format integer part with thousand separators
+    let formattedInteger = "";
+    for (let i = 0; i < integerPart.length; i++) {
+      if (i > 0 && (integerPart.length - i) % 3 === 0) {
+        formattedInteger += ".";
       }
-      formattedInt += intPart[i];
+      formattedInteger += integerPart[i];
     }
 
-    return `${formattedInt},${decPart}`;
-  };
-
-  // Convert formatted string back to number for form value
-  const parseFromBRL = (formattedValue: string): number => {
-    if (!formattedValue) return 0;
-
-    // Remove thousand separators and replace comma with dot for JS number parsing
-    const numberStr = formattedValue.replace(/\./g, "").replace(",", ".");
-    return parseFloat(numberStr);
+    return `${formattedInteger || "0"},${decimalPart}`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
+    // Get only numeric value from input
+    const inputValue = e.target.value.replace(/\D/g, "");
 
-    // Strip all non-numeric characters
-    const numericValue = rawValue.replace(/[^\d]/g, "");
+    // Convert to number (as cents)
+    const cents = inputValue === "" ? 0 : parseInt(inputValue, 10);
 
-    // Format the value
-    const formattedValue = formatToBRL(numericValue);
+    // Update internal raw value
+    setRawValue(cents);
 
-    // Update the field with formatted display and parsed numeric value
+    // Format for display
+    const formattedValue = formatCentsToBRL(cents);
+
+    // Update react-hook-form with actual decimal value
+    field.onChange(cents / 100);
+
+    // Set the formatted value to input
     e.target.value = formattedValue;
-    field.onChange(parseFromBRL(formattedValue));
   };
 
-  // Format initial value when component mounts or when value changes from outside
-  const displayValue =
-    field.value !== undefined && field.value !== ""
-      ? formatToBRL(field.value * 100) // Multiply by 100 to convert to cents for formatting
-      : "";
+  // Get the formatted display value
+  const displayValue = formatCentsToBRL(rawValue);
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -103,11 +105,6 @@ export const BRLCurrencyInput: React.FC<CurrencyInputProps> = ({
           inputClassName
         )}
       />
-      {error && (
-        <p className={cn("text-sm font-medium text-red-500", errorClassName)}>
-          {error.message}
-        </p>
-      )}
     </div>
   );
 };

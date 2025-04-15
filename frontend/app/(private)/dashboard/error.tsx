@@ -11,6 +11,10 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const message = error.message.includes("autenticado")
+    ? "Seu usuário não está autenticado"
+    : error.message;
+
   useEffect(() => {
     // Log the error to an error reporting service
     console.error(error);
@@ -21,8 +25,8 @@ export default function Error({
       <h2 className="text-red-400 text-5xl max-w-[25ch] text-center">
         Opa! Houve um problema durante a execução da aplicação!
       </h2>
-      <p className="text-2xl mt-8">{error.message}</p>
-      {(error?.cause === 401 && (
+      <p className="text-2xl mt-8">{message}</p>
+      {(error.message.includes("autenticado") && (
         <Button
           variant="outline"
           className="mt-4"

@@ -10,12 +10,20 @@ export async function deleteIncome(prevState: any) {
 
   if (!sessionCookie) {
     console.log("no session cookie found");
-    return { status: "error", message: "O usuário não está logado!" };
+    return {
+      status: "error",
+      message: "O usuário não está logado!",
+      id: prevState?.id,
+    };
   }
 
   if (!prevState?.id) {
     console.log("no id was found for deleteIncome");
-    return { status: "error", message: "Falha ao excluir a renda." };
+    return {
+      status: "error",
+      message: "Falha ao excluir a renda.",
+      id: prevState?.id,
+    };
   }
 
   console.log(`Deleting income of ID: ${prevState.id}`);
@@ -36,6 +44,14 @@ export async function deleteIncome(prevState: any) {
   }
 
   console.log("renda excluída com sucesso!");
+  // since the card is gone when deleted, we're sending a cookie to be able to display the toast
+  cookieStore.set(
+    "toast",
+    JSON.stringify({
+      status: "success",
+      message: "Renda excluída com sucesso!",
+    })
+  );
   revalidateTag("delete-renda");
   return {
     status: "success",

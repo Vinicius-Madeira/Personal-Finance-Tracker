@@ -8,6 +8,7 @@ import { Income } from "../types";
 import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ToastHandler } from "./toast-handler";
 
 export default async function IncomesTab() {
   const cookieStore = await cookies();
@@ -45,8 +46,8 @@ export default async function IncomesTab() {
   const incomes = (await response.json()) as Income[];
   return (
     <>
-      <Toaster closeButton duration={4000} position="top-center" />
       <DashboardAddForm />
+      <ToastHandler items={incomes.length} />
 
       {(incomes.length === 0 && (
         <div className="w-fit mx-auto my-16">

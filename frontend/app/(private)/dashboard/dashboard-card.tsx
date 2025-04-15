@@ -11,12 +11,6 @@ import { ptBR } from "date-fns/locale";
 import { currency, parseLocalDate } from "@/utils/format";
 import { Income } from "../types";
 import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 
 interface DashboardCardProps {
   income: Income;
@@ -45,21 +39,7 @@ export default function DashboardCard({ income }: DashboardCardProps) {
             {income.categoria}
           </Badge>
         </div>
-        {true && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                className="absolute top-[-2] right-1 w-8 h-2 pb-5 text-2xl font-medium text-gray-900 dark:text-neutral-400"
-              >
-                ...
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-fit p-0 flex-col items-center">
-              <DashboardCardActions income={income} />
-            </PopoverContent>
-          </Popover>
-        )}
+        <DashboardCardActions income={income} />
       </CardContent>
     </Card>
   );

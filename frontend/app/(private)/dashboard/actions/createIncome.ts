@@ -22,15 +22,10 @@ export async function createIncome(
     return { status: "error", message: "O usuário não está logado!" };
   }
 
-  // workaround to deal with integers on back-end
-  const value = Number(
-    (formData.get("valor") as string).replace(".", "").replace(",", ".")
-  );
-
   const newIncome = {
     titulo: formData.get("titulo"),
     data: formData.get("data"),
-    valor: value,
+    valor: Number(formData.get("valor")),
     categoria: formData.get("categoria"),
     descricao: formData.get("descricao"),
   };

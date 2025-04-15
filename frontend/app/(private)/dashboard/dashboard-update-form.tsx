@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
-import React, { useActionState, useEffect, useTransition } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { formSchema, FormSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,9 +58,16 @@ export default function DashboardUpdateForm({
     },
   });
 
-  function onSubmit(values: FormData) {
+  function onSubmit(values: FormSchema) {
+    const formData = new FormData();
+
+    for (const [key, value] of Object.entries(values)) {
+      formData.append(key, value.toString());
+    }
+    formData.set("data", new Date(values.data).toISOString().split("T")[0]);
+
     startUpdateTransition(() => {
-      formAction(values);
+      formAction(formData);
     });
   }
 
@@ -75,7 +82,7 @@ export default function DashboardUpdateForm({
 
   return (
     <Form {...form}>
-      <form action={onSubmit} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="titulo"
@@ -152,10 +159,10 @@ export default function DashboardUpdateForm({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
+                    defaultMonth={field.value}
                     disabled={(date) =>
                       date > new Date() || date < new Date("2000-01-01")
                     }
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
