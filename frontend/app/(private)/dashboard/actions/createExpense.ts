@@ -10,7 +10,7 @@ type ActionReturn = {
   message: string;
 };
 
-export async function createIncome(
+export async function createExpense(
   prevState: any,
   formData: FormData
 ): Promise<ActionReturn> {
@@ -22,7 +22,7 @@ export async function createIncome(
     return { status: "error", message: "O usuário não está logado!" };
   }
 
-  const newIncome = {
+  const newExpense = {
     titulo: formData.get("titulo"),
     data: formData.get("data"),
     valor: Number(formData.get("valor")),
@@ -30,23 +30,23 @@ export async function createIncome(
     descricao: formData.get("descricao"),
   };
 
-  console.log(`Sending new income`);
-  console.log(newIncome);
-  const response = await fetch(`${apiURL}/api/renda`, {
+  console.log(`Sending new expense`);
+  console.log(newExpense);
+  const response = await fetch(`${apiURL}/api/gasto`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Cookie: `JSESSIONID=${sessionCookie.value}`,
     },
-    body: JSON.stringify(newIncome),
+    body: JSON.stringify(newExpense),
   });
 
   if (!response.ok) {
-    console.log(`Failed to create new income: status: ${response.status}`);
-    return { status: "error", message: "Ocorreu uma falha ao criar a renda." };
+    console.log(`Failed to create new expense: status: ${response.status}`);
+    return { status: "error", message: "Ocorreu uma falha ao criar gasto." };
   }
 
-  console.log("Nova renda criada com sucesso!");
-  revalidateTag("create-income");
-  return { status: "success", message: "Nova renda criada com sucesso!" };
+  console.log("Novo gasto criado com sucesso!");
+  revalidateTag("create-expense");
+  return { status: "success", message: "Novo gasto criado com sucesso!" };
 }

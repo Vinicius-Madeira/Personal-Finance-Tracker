@@ -1,4 +1,4 @@
-export type Income = {
+export type Item = {
   id: number;
   titulo: string;
   valor: number;

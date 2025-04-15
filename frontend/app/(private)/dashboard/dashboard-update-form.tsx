@@ -29,18 +29,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { parseLocalDate } from "@/utils/format";
 import { showSuccessToast } from "@/components/success-toast";
 import { showErrorToast } from "@/components/error-toast";
-import { Income } from "../types";
+import { Item } from "../types";
 import { updateIncome } from "./actions/updateIncome";
 
 interface DashboardUpdateFormProps {
-  income: Income;
+  item: Item;
+  editAction: (prevState: any, formData: FormData) => any;
 }
 
 export default function DashboardUpdateForm({
-  income,
+  item,
+  editAction,
 }: DashboardUpdateFormProps) {
-  const [state, formAction] = useActionState(updateIncome, {
-    id: income.id,
+  const [state, formAction] = useActionState(editAction, {
+    id: item.id,
     status: "",
     message: "",
   });
@@ -49,12 +51,11 @@ export default function DashboardUpdateForm({
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      titulo: income.titulo,
-      descricao: income.descricao,
-      categoria: income.categoria,
-      data:
-        income.data instanceof Date ? income.data : parseLocalDate(income.data),
-      valor: income.valor,
+      titulo: item.titulo,
+      descricao: item.descricao,
+      categoria: item.categoria,
+      data: item.data instanceof Date ? item.data : parseLocalDate(item.data),
+      valor: item.valor,
     },
   });
 

@@ -4,7 +4,7 @@ import { apiURL } from "@/utils/api";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-export async function deleteIncome(prevState: any) {
+export async function deleteExpense(prevState: any) {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("JSESSIONID");
 
@@ -18,16 +18,16 @@ export async function deleteIncome(prevState: any) {
   }
 
   if (!prevState?.id) {
-    console.log("no id was found for deleteIncome");
+    console.log("no id was found for deleteExpense");
     return {
       status: "error",
-      message: "Falha ao excluir a renda.",
+      message: "Falha ao excluir o gasto.",
       id: prevState?.id,
     };
   }
 
-  console.log(`Deleting income of ID: ${prevState.id}`);
-  const response = await fetch(`${apiURL}/api/renda/${prevState.id}`, {
+  console.log(`Deleting expense of ID: ${prevState.id}`);
+  const response = await fetch(`${apiURL}/api/gasto/${prevState.id}`, {
     method: "DELETE",
     headers: {
       Cookie: `JSESSIONID=${sessionCookie.value}`,
@@ -35,27 +35,27 @@ export async function deleteIncome(prevState: any) {
   });
 
   if (!response.ok) {
-    console.log(`failed to delete income. status: ${response.status}`);
+    console.log(`failed to delete expense. status: ${response.status}`);
     return {
       status: "error",
-      message: "Ocorreu uma falha ao excluir a renda.",
+      message: "Ocorreu uma falha ao excluir o gasto.",
       id: prevState.id,
     };
   }
 
-  console.log("renda excluída com sucesso!");
+  console.log("gasto excluído com sucesso!");
   // since the card is gone when deleted, we're sending a cookie to be able to display the toast
   cookieStore.set(
     "toast",
     JSON.stringify({
       status: "success",
-      message: "Renda excluída com sucesso!",
+      message: "Gasto excluído com sucesso!",
     })
   );
-  revalidateTag("delete-income");
+  revalidateTag("delete-expense");
   return {
     status: "success",
-    message: "Renda excluída com sucesso!",
+    message: "Gasto excluído com sucesso!",
     id: prevState.id,
   };
 }

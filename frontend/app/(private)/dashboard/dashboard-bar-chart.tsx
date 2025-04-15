@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { Income } from "../types";
+import { Item } from "../types";
 import { useMemo } from "react";
 
 interface CustomTooltipProps {
@@ -50,12 +50,16 @@ type MonthlyMap = {
 };
 
 interface CustomBarChartProps {
-  incomes: Income[];
+  title: string;
+  description: string;
+  items: Item[];
   monthLimit?: number;
 }
 
 export default function CustomBarChart({
-  incomes,
+  title,
+  description,
+  items,
   monthLimit = 6,
 }: CustomBarChartProps) {
   // Process data to aggregate by month
@@ -64,7 +68,7 @@ export default function CustomBarChart({
     const monthlyMap: MonthlyMap = {};
 
     // Process each income entry
-    incomes.forEach((entry) => {
+    items.forEach((entry) => {
       const date = new Date(entry.data);
       const monthYear = date.toLocaleString("pt-BR", {
         month: "long",
@@ -92,7 +96,7 @@ export default function CustomBarChart({
 
     // Limit to the specified number of months
     return result.slice(-monthLimit);
-  }, [incomes, monthLimit]);
+  }, [items, monthLimit]);
 
   // Format value for Y-axis
   const formatYAxis = (value: number) => {
@@ -200,9 +204,10 @@ export default function CustomBarChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-center text-2xl">Renda Mensal</CardTitle>
+        <CardTitle className="text-center text-2xl">{title} Mensal</CardTitle>
         <CardDescription className="text-center">
-          {(aggregatedData.length === 0 && "Nenhuma renda cadastrada") ||
+          {(aggregatedData.length === 0 &&
+            `Nenhuma ${description} cadastrada`) ||
             (aggregatedData.length === 1 && "Exibindo um mês") ||
             `Exibindo ${aggregatedData.length} meses`}
         </CardDescription>

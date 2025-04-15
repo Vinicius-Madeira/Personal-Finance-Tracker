@@ -36,10 +36,27 @@ import Spinner from "@/components/spinner";
 import { showErrorToast } from "@/components/error-toast";
 import { showSuccessToast } from "@/components/success-toast";
 import { BRLCurrencyInput } from "@/components/currency-input";
-import { createIncome } from "./actions/createIncome";
 
-export default function DashboardAddForm() {
-  const [state, formAction] = useActionState(createIncome, {
+const defaultValues = {
+  titulo: "",
+  data: new Date(),
+  valor: 0,
+  categoria: "",
+  descricao: "",
+};
+
+interface DashboardAddFormProps {
+  buttonText: string;
+  title: string;
+  createAction: (prevState: any, formData: FormData) => any;
+}
+
+export default function DashboardAddForm({
+  buttonText,
+  title,
+  createAction,
+}: DashboardAddFormProps) {
+  const [state, formAction] = useActionState(createAction, {
     status: "",
     message: "",
   });
@@ -47,13 +64,7 @@ export default function DashboardAddForm() {
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      titulo: "",
-      data: new Date(),
-      valor: 0,
-      categoria: "",
-      descricao: "",
-    },
+    defaultValues,
   });
 
   async function onSubmit(values: FormSchema) {
@@ -70,6 +81,7 @@ export default function DashboardAddForm() {
   useEffect(() => {
     if (state.status === "success") {
       showSuccessToast(state.message);
+      form.reset(defaultValues);
     }
     if (state.status === "error") {
       showErrorToast(state.message, "Por favor, tente novamente.");
@@ -79,14 +91,11 @@ export default function DashboardAddForm() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="absolute left-100 top-24">
-          Nova Renda
-          <ListPlus />
-        </Button>
+        <Button className="absolute left-100 top-24">{buttonText}</Button>
       </DialogTrigger>
       <DialogContent className="w-100">
         <DialogHeader>
-          <DialogTitle>Nova Renda</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Preencha os campos abaixo</DialogDescription>
         </DialogHeader>
         <Form {...form}>

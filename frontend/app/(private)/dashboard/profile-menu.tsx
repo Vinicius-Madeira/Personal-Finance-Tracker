@@ -12,11 +12,6 @@ import { frontendURL } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-interface ProfileMenuProps {
-  usuario: string;
-  name: string;
-}
-
 export default function ProfileMenu() {
   const [pending, setPending] = useState(false);
   const router = useRouter();

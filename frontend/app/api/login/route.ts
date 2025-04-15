@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  console.log(`Requesting login for: ${body}`);
+  console.log(`Requesting login for: ${body?.email}`);
   const backendRes = await fetch(`${apiURL}/login`, {
     method: "POST",
     headers: {

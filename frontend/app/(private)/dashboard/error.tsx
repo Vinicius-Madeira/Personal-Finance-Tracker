@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { frontendURL } from "@/utils/api";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Error({
@@ -11,6 +12,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const router = useRouter();
   const message = error.message.includes("autenticado")
     ? "Seu usuário não está autenticado"
     : error.message;
@@ -32,7 +34,7 @@ export default function Error({
           className="mt-4"
           onClick={async () => {
             await fetch(`${frontendURL}/api/logout`, { method: "POST" });
-            reset();
+            router.push("/login");
           }}
         >
           Voltar à tela de login

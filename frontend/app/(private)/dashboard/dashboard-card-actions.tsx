@@ -21,11 +21,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../../components/ui/alert-dialog";
-import { Income } from "../types";
+import { Item } from "../types";
 import DashboardUpdateForm from "./dashboard-update-form";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import Spinner from "@/components/spinner";
-import { deleteIncome } from "./actions/deleteIncome";
 import {
   Popover,
   PopoverContent,
@@ -33,14 +32,20 @@ import {
 } from "@/components/ui/popover";
 import { showErrorToast } from "@/components/error-toast";
 
-interface DashboardCardProps {
-  income: Income;
+interface DashboardCardActionsProps {
+  item: Item;
+  updateAction: (prevState: any, formData: FormData) => any;
+  deleteAction: (prevState: any) => any;
 }
 
-export default function DashboardCardActions({ income }: DashboardCardProps) {
+export default function DashboardCardActions({
+  item,
+  updateAction,
+  deleteAction,
+}: DashboardCardActionsProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [state, deleteAction] = useActionState(deleteIncome, {
-    id: income.id,
+  const [state, deleteItem] = useActionState(deleteAction, {
+    id: item.id,
     status: "",
     message: "",
   });
@@ -48,7 +53,7 @@ export default function DashboardCardActions({ income }: DashboardCardProps) {
 
   function onDelete() {
     startDeleteTransition(() => {
-      deleteAction();
+      deleteItem();
     });
   }
 
@@ -77,7 +82,7 @@ export default function DashboardCardActions({ income }: DashboardCardProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-fit p-0 flex flex-col items-center">
-          <Edit income={income} onOpen={closeMenu} />
+          <Edit item={item} onEdit={updateAction} onOpen={closeMenu} />
           <Delete
             pendingState={isDeletePending}
             onDelete={onDelete}
@@ -90,10 +95,11 @@ export default function DashboardCardActions({ income }: DashboardCardProps) {
 }
 
 interface EditProps {
-  income: Income;
+  item: Item;
+  onEdit: (prevState: any, formData: FormData) => any;
   onOpen: (open: boolean) => void;
 }
-export function Edit({ income, onOpen }: EditProps) {
+export function Edit({ item, onEdit, onOpen }: EditProps) {
   return (
     <Dialog onOpenChange={onOpen}>
       <DialogTrigger asChild>
@@ -105,11 +111,11 @@ export function Edit({ income, onOpen }: EditProps) {
       <DialogContent className="w-100">
         <DialogHeader>
           <DialogTitle>
-            Editando &#8594; <span className="font-bold">{income.titulo}</span>
+            Editando &#8594; <span className="font-bold">{item.titulo}</span>
           </DialogTitle>
           <DialogDescription>Altere os campos abaixo</DialogDescription>
         </DialogHeader>
-        <DashboardUpdateForm income={income} />
+        <DashboardUpdateForm item={item} editAction={onEdit} />
       </DialogContent>
     </Dialog>
   );
@@ -131,7 +137,7 @@ function Delete({ pendingState, onDelete, onOpen }: DeleteProps) {
       </AlertDialogTrigger>
       <AlertDialogContent className="w-fit">
         <AlertDialogHeader>
-          <AlertDialogTitle>Excluir Renda?</AlertDialogTitle>
+          <AlertDialogTitle>Excluir Item?</AlertDialogTitle>
           <AlertDialogDescription>
             Esta ação não pode ser desfeita.
           </AlertDialogDescription>

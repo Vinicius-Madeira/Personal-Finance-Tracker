@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IncomesTab from "./incomes-tab";
 import ProfileMenu from "./profile-menu";
+import ExpensesTab from "./expenses-tab";
 
 export default function Dashboard() {
   return (
@@ -21,7 +22,9 @@ export default function Dashboard() {
         <TabsContent value="incomes">
           <IncomesTab />
         </TabsContent>
-        <TabsContent value="expenses">Aba de gastos!</TabsContent>
+        <TabsContent value="expenses">
+          <ExpensesTab />
+        </TabsContent>
       </Tabs>
     </div>
   );

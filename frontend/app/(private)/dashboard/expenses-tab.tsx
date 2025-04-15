@@ -8,11 +8,11 @@ import { Item } from "../types";
 import { redirect } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToastHandler } from "./toast-handler";
-import { createIncome } from "./actions/createIncome";
-import { updateIncome } from "./actions/updateIncome";
-import { deleteIncome } from "./actions/deleteIncome";
+import { createExpense } from "./actions/createExpense";
+import { updateExpense } from "./actions/updateExpense";
+import { deleteExpense } from "./actions/deleteExpense";
 
-export default async function IncomesTab() {
+export default async function ExpensesTab() {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("JSESSIONID");
   if (!sessionCookie) {
@@ -20,13 +20,13 @@ export default async function IncomesTab() {
     redirect("/login");
   }
 
-  const response = await fetch(`${apiURL}/api/renda/all`, {
+  const response = await fetch(`${apiURL}/api/gasto/all`, {
     headers: {
       Cookie: `JSESSIONID=${sessionCookie.value}`,
     },
     cache: "no-cache",
     next: {
-      tags: ["create-income", "update-income", "delete-income"],
+      tags: ["create-expense", "update-expense", "delete-expense"],
       revalidate: 600,
     },
   });
@@ -45,44 +45,48 @@ export default async function IncomesTab() {
     }
   }
 
-  const incomes = (await response.json()) as Item[];
+  const expenses = (await response.json()) as Item[];
   return (
     <>
       <DashboardAddForm
-        title="Nova Renda"
-        buttonText="Nova Renda"
-        createAction={createIncome}
+        title="Novo Gasto"
+        buttonText="Novo Gasto"
+        createAction={createExpense}
       />
-      <ToastHandler items={incomes.length} />
+      <ToastHandler items={expenses.length} />
 
-      {(incomes.length === 0 && (
+      {(expenses.length === 0 && (
         <div className="w-fit mx-auto my-16">
           <p className="font-bold text-4xl">
-            Clique em <span className="text-primary">"Nova Renda"</span> para
-            começar a gerenciar suas rendas.
+            Clique em <span className="text-primary">"Novo Gasto"</span> para
+            começar a gerenciar seus gastos.
           </p>
         </div>
       )) || (
         <>
           <ScrollArea className="h-48 p-2 rounded-md mt-2">
             <div id="cards" className="grid grid-cols-5 gap-4">
-              {incomes.map((income) => (
+              {expenses.map((expense) => (
                 <DashboardCard
-                  key={income.id}
-                  item={income}
-                  updateAction={updateIncome}
-                  deleteAction={deleteIncome}
+                  key={expense.id}
+                  item={expense}
+                  updateAction={updateExpense}
+                  deleteAction={deleteExpense}
                 />
               ))}
             </div>
           </ScrollArea>
           <div id="charts" className="grid grid-cols-2 mt-4 gap-4">
             <CustomPieChart
-              title="Renda"
-              description="renda(s)"
-              items={incomes}
+              title="Gasto"
+              description="gasto(s)"
+              items={expenses}
             />
-            <CustomBarChart title="Renda" description="renda" items={incomes} />
+            <CustomBarChart
+              title="Gasto"
+              description="gasto"
+              items={expenses}
+            />
           </div>
         </>
       )}

@@ -4,7 +4,7 @@ import { apiURL } from "@/utils/api";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-export async function updateIncome(prevState: any, formData: FormData) {
+export async function updateExpense(prevState: any, formData: FormData) {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("JSESSIONID");
 
@@ -14,11 +14,11 @@ export async function updateIncome(prevState: any, formData: FormData) {
   }
 
   if (!prevState?.id) {
-    console.log("no id was found for updateIncome");
-    return { status: "error", message: "Falha ao atualizar a renda." };
+    console.log("no id was found for updateExpense");
+    return { status: "error", message: "Falha ao atualizar o gasto." };
   }
 
-  const updatedIncome = {
+  const updatedExpense = {
     titulo: formData.get("titulo"),
     data: formData.get("data"),
     valor: Number(formData.get("valor")),
@@ -26,31 +26,31 @@ export async function updateIncome(prevState: any, formData: FormData) {
     descricao: formData.get("descricao"),
   };
 
-  console.log(`Sending updated income`);
-  console.log(updatedIncome);
-  const response = await fetch(`${apiURL}/api/renda/${prevState.id}`, {
+  console.log(`Sending updated expense`);
+  console.log(updatedExpense);
+  const response = await fetch(`${apiURL}/api/gasto/${prevState.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Cookie: `JSESSIONID=${sessionCookie.value}`,
     },
-    body: JSON.stringify(updatedIncome),
+    body: JSON.stringify(updatedExpense),
   });
 
   if (!response.ok) {
-    console.log(`failed to update income: status: ${response.status}`);
+    console.log(`failed to update expense: status: ${response.status}`);
     return {
       status: "error",
-      message: "Ocorreu uma falha ao atualizar a renda.",
+      message: "Ocorreu uma falha ao atualizar o gasto.",
       id: prevState.id,
     };
   }
 
-  console.log("renda atualizada com sucesso!");
-  revalidateTag("update-income");
+  console.log("Gasto atualizado com sucesso!");
+  revalidateTag("update-expense");
   return {
     status: "success",
-    message: "Renda atualizada com sucesso!",
+    message: "Gasto atualizado com sucesso!",
     id: prevState.id,
   };
 }

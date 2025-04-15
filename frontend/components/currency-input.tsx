@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useController, Control } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -41,6 +41,16 @@ export const BRLCurrencyInput: React.FC<CurrencyInputProps> = ({
     }
     return 0;
   });
+
+  // Listen for external changes to field value (like form.reset())
+  useEffect(() => {
+    // If field.value has changed externally and doesn't match our raw value
+    const fieldValueInCents =
+      field.value !== undefined ? Math.round(field.value * 100) : 0;
+    if (fieldValueInCents !== rawValue) {
+      setRawValue(fieldValueInCents);
+    }
+  }, [field.value, rawValue]);
 
   // Format a cents value to BRL display format
   const formatCentsToBRL = (cents: number): string => {

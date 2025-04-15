@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { currency } from "@/utils/format";
-import { Income } from "../types";
+import { Item } from "../types";
 
 interface CategoryData {
   name: string;
@@ -67,12 +67,16 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
 };
 
 interface CustomPieChartProps {
-  incomes: Income[];
+  title: string;
+  description: string;
+  items: Item[];
   categoryLimit?: number;
 }
 
 export default function CustomPieChart({
-  incomes,
+  title,
+  description,
+  items,
   categoryLimit = 10,
 }: CustomPieChartProps) {
   // Process data to aggregate by category
@@ -81,7 +85,7 @@ export default function CustomPieChart({
     const categoryMap: CategoryMap = {};
 
     // Process each category entry
-    incomes.forEach((entry) => {
+    items.forEach((entry) => {
       if (!categoryMap[entry.categoria]) {
         categoryMap[entry.categoria] = {
           name: entry.categoria,
@@ -114,9 +118,9 @@ export default function CustomPieChart({
     }
 
     return result;
-  }, [incomes, categoryLimit]);
+  }, [items, categoryLimit]);
 
-  const totalIncome = aggregatedData.reduce((sum, item) => sum + item.value, 0);
+  const totalValue = aggregatedData.reduce((sum, item) => sum + item.value, 0);
   const totalEntries = aggregatedData.reduce(
     (sum, item) => sum + item.count,
     0
@@ -125,11 +129,11 @@ export default function CustomPieChart({
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle className="text-center text-2xl">Renda Total</CardTitle>
+        <CardTitle className="text-center text-2xl">{title} Total</CardTitle>
         <CardDescription className="text-center">
-          {incomes.length === 0
+          {items.length === 0
             ? ""
-            : `Exibindo soma de ${totalEntries} renda(s)`}
+            : `Exibindo soma de ${totalEntries} ${description}`}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -138,7 +142,7 @@ export default function CustomPieChart({
           className="aspect-square max-h-[380] w-[100%]"
         >
           <span className="font-mono font-bold text-2xl text-green-500 block w-fit mx-auto">
-            {currency.format(totalIncome)}
+            {currency.format(totalValue)}
           </span>
           <PieChart>
             <ChartTooltip cursor={false} content={<CustomTooltip />} />
