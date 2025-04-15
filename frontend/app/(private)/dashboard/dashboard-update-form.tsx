@@ -177,7 +177,7 @@ export default function DashboardUpdateForm({
           )}
         />
         <Button type="submit" disabled={isUpdatePending}>
-          {isUpdatePending ? "Atualizando..." : "Atualizar"}
+          {isUpdatePending ? "Alterando..." : "Alterar"}
           {isUpdatePending && <Spinner />}
         </Button>
       </form>

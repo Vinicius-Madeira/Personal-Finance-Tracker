@@ -38,7 +38,9 @@ export default function DashboardCard({ income }: DashboardCardProps) {
           )}`}</span>
         </div>
         <div className="flex justify-between mt-4">
-          <span className="text-xs text-neutral-400">{income.descricao}</span>
+          <span className="text-xs text-neutral-400 truncate max-w-40">
+            {income.descricao}
+          </span>
           <Badge variant="outline" className="text-xs">
             {income.categoria}
           </Badge>

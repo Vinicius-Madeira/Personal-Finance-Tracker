@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { Income } from "../types";
 import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function IncomesTab() {
   const cookieStore = await cookies();
@@ -46,15 +47,29 @@ export default async function IncomesTab() {
     <>
       <Toaster closeButton duration={4000} position="top-center" />
       <DashboardAddForm />
-      <div id="cards" className="grid grid-cols-5 gap-4 mt-8">
-        {incomes.map((income) => (
-          <DashboardCard key={income.id} income={income} />
-        ))}
-      </div>
-      <div id="charts" className="grid grid-cols-2 mt-4 gap-4">
-        <CustomPieChart incomes={incomes} />
-        <CustomBarChart incomes={incomes} />
-      </div>
+
+      {(incomes.length === 0 && (
+        <div className="w-fit mx-auto my-16">
+          <p className="font-bold text-4xl">
+            Clique em <span className="text-primary">"Nova Renda"</span> para
+            começar a gerenciar suas rendas.
+          </p>
+        </div>
+      )) || (
+        <>
+          <ScrollArea className="h-48 p-2 rounded-md mt-2">
+            <div id="cards" className="grid grid-cols-5 gap-4">
+              {incomes.map((income) => (
+                <DashboardCard key={income.id} income={income} />
+              ))}
+            </div>
+          </ScrollArea>
+          <div id="charts" className="grid grid-cols-2 mt-4 gap-4">
+            <CustomPieChart incomes={incomes} />
+            <CustomBarChart incomes={incomes} />
+          </div>
+        </>
+      )}
     </>
   );
 }

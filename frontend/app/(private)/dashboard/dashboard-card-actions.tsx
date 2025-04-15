@@ -57,11 +57,12 @@ export default function DashboardCardActions({ income }: DashboardCardProps) {
   }, [state]);
 
   return (
-    <div id="action-buttons">
+    <div id="action-buttons" className="flex flex-col">
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost">
             <Pen />
+            Editar
           </Button>
         </DialogTrigger>
         <DialogContent className="w-100">
@@ -70,15 +71,16 @@ export default function DashboardCardActions({ income }: DashboardCardProps) {
               Editando &#8594;{" "}
               <span className="font-bold">{income.titulo}</span>
             </DialogTitle>
-            <DialogDescription>Edição de formulário</DialogDescription>
+            <DialogDescription>Altere os campos abaixo</DialogDescription>
           </DialogHeader>
           <DashboardUpdateForm income={income} />
         </DialogContent>
       </Dialog>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost">
             <Trash />
+            Excluir
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent className="w-fit">

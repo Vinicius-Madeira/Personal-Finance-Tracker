@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -91,7 +91,7 @@ export default function CustomBarChart({
     result.sort((a, b) => b.timestamp - a.timestamp);
 
     // Limit to the specified number of months
-    return result.slice(0, monthLimit);
+    return result.slice(-monthLimit);
   }, [incomes, monthLimit]);
 
   // Format value for Y-axis
@@ -102,19 +102,114 @@ export default function CustomBarChart({
     return `R$${value}`;
   };
 
+  // Handle single entry case - add empty entries if needed
+  const enhancedData = useMemo(() => {
+    if (aggregatedData.length <= 1) {
+      // If there's only one entry, create placeholder entries to improve visual appearance
+      const singleEntry = aggregatedData[0];
+
+      if (!singleEntry) {
+        // No data case
+        return [
+          {
+            name: "No Data",
+            month: "N/A",
+            year: new Date().getFullYear(),
+            value: 0,
+            count: 0,
+            timestamp: Date.now(),
+          },
+        ];
+      }
+
+      // Create date objects for the placeholder entries
+      const entryDate = new Date(singleEntry.timestamp);
+
+      // Create two additional empty months (one before, one after)
+      const prevMonth = new Date(entryDate);
+      prevMonth.setMonth(prevMonth.getMonth() - 1);
+
+      const nextMonth = new Date(entryDate);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+      return [
+        {
+          name: prevMonth.toLocaleString("pt-BR", {
+            month: "long",
+            year: "numeric",
+          }),
+          month: prevMonth.toLocaleString("pt-BR", { month: "short" }),
+          year: prevMonth.getFullYear(),
+          timestamp: prevMonth.getTime(),
+          value: 0, // Empty value
+          count: 0,
+        },
+        singleEntry,
+        {
+          name: nextMonth.toLocaleString("pt-BR", {
+            month: "long",
+            year: "numeric",
+          }),
+          month: nextMonth.toLocaleString("pt-BR", { month: "short" }),
+          year: nextMonth.getFullYear(),
+          timestamp: nextMonth.getTime(),
+          value: 0, // Empty value
+          count: 0,
+        },
+      ];
+    }
+
+    if (aggregatedData.length === 2) {
+      // If there are only two entries, add one more placeholder
+      const latestEntry = aggregatedData[1];
+      const latestDate = new Date(latestEntry.timestamp);
+
+      const nextMonth = new Date(latestDate);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+      return [
+        ...aggregatedData,
+        {
+          name: nextMonth.toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+          }),
+          month: nextMonth.toLocaleString("default", { month: "short" }),
+          year: nextMonth.getFullYear(),
+          timestamp: nextMonth.getTime(),
+          value: 0, // Empty value
+          count: 0,
+        },
+      ];
+    }
+
+    return aggregatedData;
+  }, [aggregatedData]);
+
+  // Generate colors - highlight the actual data
+  const getBarColors = () => {
+    if (aggregatedData.length <= 1) {
+      return ["#e5e7eb", "#4f46e5", "#e5e7eb"]; // Grey, Blue, Grey
+    } else if (aggregatedData.length === 2) {
+      return [...Array(aggregatedData.length).fill("#4f46e5"), "#e5e7eb"]; // Blues + Grey
+    } else {
+      return Array(enhancedData.length).fill("#4f46e5"); // All blue
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-center text-2xl">Renda Mensal</CardTitle>
         <CardDescription className="text-center">
-          {(aggregatedData.length === 0 && "") ||
-            (aggregatedData.length === 1 && "Exibindo último mês") ||
-            `Exibindo últimos ${aggregatedData.length} meses`}
+          {(aggregatedData.length === 0 && "Nenhuma renda cadastrada") ||
+            (aggregatedData.length === 1 && "Exibindo um mês") ||
+            `Exibindo ${aggregatedData.length} meses`}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={{}}>
-          <BarChart accessibilityLayer data={aggregatedData}>
+          <BarChart accessibilityLayer data={enhancedData}>
             <CartesianGrid vertical={true} />
             <XAxis
               dataKey="month"
@@ -122,14 +217,18 @@ export default function CustomBarChart({
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value, index) => {
-                // Show month and year (e.g., "Jan '24")
-                const item = aggregatedData[index];
+                if (!enhancedData[index]) return "";
+                const item = enhancedData[index];
                 return `${item.month} ${String(item.year).slice(-2)}`;
               }}
             />
             <YAxis tickFormatter={formatYAxis} />
             <ChartTooltip cursor={false} content={<CustomTooltip />} />
-            <Bar dataKey="value" fill="var(--chart-2)" radius={8} />
+            <Bar dataKey="value" fill="var(--chart-2)" radius={8}>
+              {enhancedData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getBarColors()[index]} />
+              ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
