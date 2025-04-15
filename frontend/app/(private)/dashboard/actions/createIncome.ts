@@ -53,5 +53,5 @@ export async function createIncome(
 
   console.log("Nova renda criada com sucesso!");
   revalidateTag("create-renda");
-  return { status: "success", message: "Ok." };
+  return { status: "success", message: "Nova renda criada com sucesso!" };
 }

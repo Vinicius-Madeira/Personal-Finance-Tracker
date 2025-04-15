@@ -1,126 +1,168 @@
 "use client";
 
 import { useMemo } from "react";
-import { Label, Pie, PieChart } from "recharts";
+import { Cell, Legend, Pie, PieChart } from "recharts";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { currencyNoCents } from "@/utils/format";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { currency } from "@/utils/format";
 import { Income } from "../types";
+
+interface CategoryData {
+  name: string;
+  value: number;
+  count: number;
+}
+
+type CategoryMap = {
+  [category: string]: CategoryData;
+};
+
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884D8",
+  "#82CA9D",
+  "#a4de6c",
+  "#d0ed57",
+  "#ffc658",
+  "#ff7300",
+  "#4d79ff",
+  "#ff4d4d",
+  "#9933ff",
+  "#2eb8b8",
+  "#ff99cc",
+];
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[];
+}
+
+// Custom tooltip formatter
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-neutral-900 p-4 rounded shadow border border-purple-200 text-center">
+        <p className="font-bold">
+          {`${payload[0].name}: `}
+
+          <span className="font-mono font-medium text-green-500 text-sm">{`R$${payload[0].value.toLocaleString(
+            "pt-BR"
+          )}`}</span>
+        </p>
+        <p className="text-xs text-gray-200">{`${payload[0].payload.count} renda(s)`}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 interface CustomPieChartProps {
   incomes: Income[];
+  categoryLimit?: number;
 }
 
-export default function CustomPieChart({ incomes }: CustomPieChartProps) {
-  let chartData;
-  if (incomes.length === 0) {
-    chartData = [{ value: 0.1, fill: "var(--chart-1)" }];
-  } else {
-    const limit = incomes.length >= 5 ? 5 : incomes.length;
-    const chartIncomes = incomes.slice(incomes.length - limit, incomes.length);
-    chartData = chartIncomes.map((income, index) => {
-      return {
-        value: income.valor,
-        fill: `var(--chart-${index + 1})`,
-      };
+export default function CustomPieChart({
+  incomes,
+  categoryLimit = 10,
+}: CustomPieChartProps) {
+  // Process data to aggregate by category
+  const aggregatedData = useMemo(() => {
+    // Create a map to store category totals and entry counts
+    const categoryMap: CategoryMap = {};
+
+    // Process each category entry
+    incomes.forEach((entry) => {
+      if (!categoryMap[entry.categoria]) {
+        categoryMap[entry.categoria] = {
+          name: entry.categoria,
+          value: 0,
+          count: 0,
+        };
+      }
+
+      categoryMap[entry.categoria].value += entry.valor;
+      categoryMap[entry.categoria].count += 1;
     });
-  }
 
-  const chartConfig = {
-    value: {
-      label: "R$",
-    },
-    1: {
-      label: "R$",
-    },
-    2: {
-      label: "R$",
-    },
-    3: {
-      label: "R$",
-    },
-    4: {
-      label: "R$",
-    },
-  };
+    // Convert map to array and sort by value (highest first)
+    let result = Object.values(categoryMap);
+    result.sort((a, b) => b.value - a.value);
 
-  const totalValue = useMemo(() => {
-    return incomes.reduce((acc, curr) => acc + curr.valor, 0);
-  }, [incomes]);
+    // Limit to the specified number of categories
+    if (result.length > categoryLimit) {
+      const topCategories = result.slice(0, categoryLimit - 1);
+      const otherCategories = result.slice(categoryLimit - 1);
+
+      // Combine smaller categories into "Other"
+      const otherCategory = {
+        name: "Other",
+        value: otherCategories.reduce((sum, cat) => sum + cat.value, 0),
+        count: otherCategories.reduce((sum, cat) => sum + cat.count, 0),
+      };
+
+      return [...topCategories, otherCategory];
+    }
+
+    return result;
+  }, [incomes, categoryLimit]);
+
+  const totalIncome = aggregatedData.reduce((sum, item) => sum + item.value, 0);
+  const totalEntries = aggregatedData.reduce(
+    (sum, item) => sum + item.count,
+    0
+  );
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-center text-2xl">Renda Total</CardTitle>
+        <CardDescription className="text-center">
+          {incomes.length === 0
+            ? ""
+            : `Exibindo soma de ${totalEntries} renda(s)`}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
+          config={{}}
+          className="aspect-square max-h-[380] w-[100%]"
         >
+          <span className="font-mono font-bold text-2xl text-green-500 block w-fit mx-auto">
+            {currency.format(totalIncome)}
+          </span>
           <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Pie
-              data={chartData}
+              data={aggregatedData}
               dataKey="value"
-              nameKey="date"
-              outerRadius={140}
-              innerRadius={120}
-              strokeWidth={5}
+              label={({ name, percent }) =>
+                `${name} (${(percent * 100).toFixed(0)}%)`
+              }
+              outerRadius={100}
+              fill="#8884d8"
             >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          {currencyNoCents.format(totalValue)}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Total
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
+              {aggregatedData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
             </Pie>
+            <Legend />
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="leading-none text-muted-foreground">
-          {incomes.length === 0
-            ? "Nenhuma renda registrada no momento"
-            : `Exibindo últimas ${incomes.length} renda(s)`}
-        </div>
-      </CardFooter>
+      <CardFooter className=""></CardFooter>
     </Card>
   );
 }

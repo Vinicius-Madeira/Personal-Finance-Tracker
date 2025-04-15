@@ -106,12 +106,16 @@ export default function CustomBarChart({
     <Card>
       <CardHeader>
         <CardTitle className="text-center text-2xl">Renda Mensal</CardTitle>
-        <CardDescription className="text-center"></CardDescription>
+        <CardDescription className="text-center">
+          {(aggregatedData.length === 0 && "") ||
+            (aggregatedData.length === 1 && "Exibindo último mês") ||
+            `Exibindo últimos ${aggregatedData.length} meses`}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={{}}>
           <BarChart accessibilityLayer data={aggregatedData}>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={true} />
             <XAxis
               dataKey="month"
               tickLine={false}

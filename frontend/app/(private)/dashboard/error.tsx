@@ -22,16 +22,22 @@ export default function Error({
         Opa! Houve um problema durante a execução da aplicação!
       </h2>
       <p className="text-2xl mt-8">{error.message}</p>
-      <Button
-        variant="outline"
-        className="mt-4"
-        onClick={async () => {
-          await fetch(`${frontendURL}/api/logout`, { method: "POST" });
-          reset();
-        }}
-      >
-        Voltar à tela de login
-      </Button>
+      {(error?.cause === 401 && (
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={async () => {
+            await fetch(`${frontendURL}/api/logout`, { method: "POST" });
+            reset();
+          }}
+        >
+          Voltar à tela de login
+        </Button>
+      )) || (
+        <Button variant="outline" className="mt-4" onClick={() => reset()}>
+          Recarregar página
+        </Button>
+      )}
     </div>
   );
 }

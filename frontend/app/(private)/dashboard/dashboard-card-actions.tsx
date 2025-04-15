@@ -22,7 +22,6 @@ import {
   AlertDialogTrigger,
 } from "../../../components/ui/alert-dialog";
 import { Income } from "../types";
-import { Toaster } from "sonner";
 import DashboardUpdateForm from "./dashboard-update-form";
 import { useActionState, useEffect, useTransition } from "react";
 import { showSuccessToast } from "@/components/success-toast";
