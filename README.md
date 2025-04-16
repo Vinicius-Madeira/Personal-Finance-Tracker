@@ -162,7 +162,7 @@ cd ../frontend
 npm install
 ```
 
-3. Configure environment variables (if needed):
+3. Configure environment variables:
 
 Create a `.env` file in the frontend directory and add the following:
 
@@ -272,4 +272,4 @@ npm install
 ```
 
 3. Verify that port 3000 is not already in use.
-4. Check that the API URL in `.env.local` points to the correct backend URL.
+4. Check that the variables in `.env` are correctly set as described above, and that the file is located in the frontend folder.
