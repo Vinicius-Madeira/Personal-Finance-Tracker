@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
+import Footer from "@/components/footer";
 
 const quicksand = Quicksand({
   variable: "--font-quicksand",
@@ -23,7 +25,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body
-        className={`${quicksand.variable} antialiased font-[family-name:var(--font-quicksand)]`}
+        className={`${quicksand.variable} antialiased font-[family-name:var(--font-quicksand)] flex flex-col min-h-screen`}
       >
         <ThemeProvider
           attribute="class"
@@ -31,7 +33,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Toaster closeButton duration={4000} position="top-center" />
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

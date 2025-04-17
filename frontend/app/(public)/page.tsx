@@ -1,5 +1,4 @@
 import CustomChart from "@/components/homepage-bar-chart";
-import Footer from "@/components/footer";
 import HomeButtons from "./home-buttons";
 import { Suspense } from "react";
 
@@ -20,7 +19,6 @@ export default function Home() {
             </Suspense>
           </div>
           <CustomChart />
-          <Footer />
         </main>
       </div>
     </>

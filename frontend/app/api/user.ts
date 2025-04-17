@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
-interface User {
+export interface User {
   user: string;
   name: string;
   email: string;

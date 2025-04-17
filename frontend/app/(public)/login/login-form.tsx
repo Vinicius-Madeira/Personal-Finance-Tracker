@@ -27,6 +27,7 @@ import { frontendURL } from "@/utils/api";
 import { useState } from "react";
 import { Toaster } from "sonner";
 import { showErrorToast } from "@/components/error-toast";
+import { showSuccessToast } from "@/components/success-toast";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -56,7 +57,7 @@ export default function LoginForm() {
     });
 
     if (response.ok) {
-      // setSubmitStatus("success");
+      showSuccessToast("Login realizado!");
       router.push("/dashboard");
     } else {
       setSubmitStatus("error");
@@ -113,7 +114,7 @@ export default function LoginForm() {
               </Button>
               <div className="mt-4 text-center text-sm">
                 Não tem uma conta?
-                <Button asChild variant="ghost">
+                <Button asChild variant="ghost" className="ml-1">
                   <Link href="/signup" className="underline underline-offset-4">
                     Cadastre-se
                   </Link>

@@ -24,6 +24,7 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { frontendURL } from "@/utils/api";
+import { showSuccessToast } from "@/components/success-toast";
 
 const formSchema = z.object({
   name: z
@@ -74,6 +75,7 @@ export default function SignupForm() {
       body: JSON.stringify(values),
     });
     if (response.ok) {
+      showSuccessToast("Cadastro realizado com sucesso!");
       router.push("/login");
     }
   }
@@ -145,7 +147,7 @@ export default function SignupForm() {
               </Button>
               <div className="mt-4 text-center text-sm">
                 Já possui uma conta?
-                <Button asChild variant="ghost">
+                <Button asChild variant="ghost" className="ml-1">
                   <Link href="/login" className="underline underline-offset-4">
                     Faça login
                   </Link>
