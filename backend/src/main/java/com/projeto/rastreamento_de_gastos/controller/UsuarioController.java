@@ -82,4 +82,16 @@ public class UsuarioController {
         return ResponseEntity.ok("Logout realizado com sucesso.");
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<?> me(HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+
+        if (usuarioLogado == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Usuário não está logado.");
+        }
+        usuarioLogado.setSenha(null);
+
+        return ResponseEntity.ok(usuarioLogado);
+    }
 }
