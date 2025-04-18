@@ -137,35 +137,33 @@ export default function CustomPieChart({
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
+        <span className="font-mono font-bold text-2xl text-green-500 block w-fit mx-auto">
+          {currency.format(totalValue)}
+        </span>
         <ChartContainer
           config={{}}
           className="aspect-square max-h-[380] w-[100%]"
         >
-          <>
-            <span className="font-mono font-bold text-2xl text-green-500 block w-fit mx-auto">
-              {currency.format(totalValue)}
-            </span>
-            <PieChart>
-              <ChartTooltip cursor={false} content={<CustomTooltip />} />
-              <Pie
-                data={aggregatedData}
-                dataKey="value"
-                label={({ name, percent }) =>
-                  `${name} (${(percent * 100).toFixed(0)}%)`
-                }
-                outerRadius={100}
-                fill="#8884d8"
-              >
-                {aggregatedData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Legend />
-            </PieChart>
-          </>
+          <PieChart>
+            <ChartTooltip cursor={false} content={<CustomTooltip />} />
+            <Pie
+              data={aggregatedData}
+              dataKey="value"
+              label={({ name, percent }) =>
+                `${name} (${(percent * 100).toFixed(0)}%)`
+              }
+              outerRadius={100}
+              fill="#8884d8"
+            >
+              {aggregatedData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Legend />
+          </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className=""></CardFooter>
