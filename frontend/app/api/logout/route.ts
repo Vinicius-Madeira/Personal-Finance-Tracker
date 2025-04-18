@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   console.log(`Logging out from ${req.url}...`);
+  console.log(`sending request to ${apiURL}`);
   const backendRes = await fetch(`${apiURL}/logout`, {
     method: "POST",
   });

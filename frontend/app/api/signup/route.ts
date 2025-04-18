@@ -5,6 +5,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   console.log("Sending new user credentials...");
+  console.log(`sending request to ${apiURL}`);
   const backendRes = await fetch(`${apiURL}/signup`, {
     method: "POST",
     headers: {
