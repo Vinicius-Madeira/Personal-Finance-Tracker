@@ -11,7 +11,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { frontendURL } from "@/utils/api";
 import { LogOut, UserRoundPen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -27,7 +26,7 @@ export default function ProfileMenu({ userData }: ProfileMenuProps) {
 
   async function onClick() {
     setPending(true);
-    const response = await fetch(`${frontendURL}/api/logout`, {
+    const response = await fetch("/api/logout", {
       method: "POST",
     });
     if (response.ok) {

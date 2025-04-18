@@ -23,7 +23,6 @@ import {
 } from "../../../components/ui/form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { frontendURL } from "@/utils/api";
 import { useState } from "react";
 import { Toaster } from "sonner";
 import { showErrorToast } from "@/components/error-toast";
@@ -51,7 +50,7 @@ export default function LoginForm() {
 
   async function onSubmit(values: FormSchema) {
     setSubmitStatus("pending");
-    const response = await fetch(`${frontendURL}/api/login`, {
+    const response = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify(values),
     });

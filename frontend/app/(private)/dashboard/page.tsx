@@ -4,7 +4,6 @@ import ProfileMenu from "./profile-menu";
 import ExpensesTab from "./expenses-tab";
 import { getUser } from "@/app/api/user";
 import { Suspense } from "react";
-import { frontendURL } from "@/utils/api";
 import { redirect } from "next/navigation";
 import OverviewTab from "./overview-tab";
 
@@ -41,7 +40,7 @@ async function DashboardHeader() {
 
   if (!userData) {
     console.log("User is null. Logging out");
-    const response = await fetch(`${frontendURL}/api/logout`, {
+    const response = await fetch("/api/logout", {
       method: "POST",
     });
     if (response.ok) {

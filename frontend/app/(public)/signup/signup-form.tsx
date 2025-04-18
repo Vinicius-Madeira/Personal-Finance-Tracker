@@ -23,7 +23,6 @@ import {
 } from "../../../components/ui/form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { frontendURL } from "@/utils/api";
 import { showSuccessToast } from "@/components/success-toast";
 
 const formSchema = z.object({
@@ -69,7 +68,7 @@ export default function SignupForm() {
   const router = useRouter();
 
   async function onSubmit(values: FormSchema) {
-    const response = await fetch(`${frontendURL}/api/signup`, {
+    const response = await fetch("/api/signup", {
       method: "POST",
       credentials: "include",
       body: JSON.stringify(values),

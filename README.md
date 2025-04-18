@@ -167,8 +167,6 @@ npm install
 Create a `.env` file in the frontend directory and add the following:
 
 ```
-NEXT_PUBLIC_FRONTEND_URL=http://localhost
-NEXT_PUBLIC_FRONTEND_PORT=3000
 API_URL=http://localhost
 API_PORT=8080
 ```

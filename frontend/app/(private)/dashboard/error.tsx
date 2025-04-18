@@ -1,7 +1,6 @@
 "use client"; // Error boundaries must be Client Components
 
 import { Button } from "@/components/ui/button";
-import { frontendURL } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -33,7 +32,7 @@ export default function Error({
           variant="outline"
           className="mt-4"
           onClick={async () => {
-            await fetch(`${frontendURL}/api/logout`, { method: "POST" });
+            await fetch("/api/logout", { method: "POST" });
             router.push("/login");
           }}
         >
