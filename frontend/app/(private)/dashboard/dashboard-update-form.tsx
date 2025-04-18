@@ -30,7 +30,6 @@ import { parseLocalDate } from "@/utils/format";
 import { showSuccessToast } from "@/components/success-toast";
 import { showErrorToast } from "@/components/error-toast";
 import { Item } from "../types";
-import { updateIncome } from "./actions/updateIncome";
 
 interface DashboardUpdateFormProps {
   item: Item;
@@ -174,7 +173,7 @@ export default function DashboardUpdateForm({
         <FormField
           control={form.control}
           name="valor"
-          render={({ field }) => (
+          render={({}) => (
             <FormItem>
               <FormLabel>Valor</FormLabel>
               <FormControl>

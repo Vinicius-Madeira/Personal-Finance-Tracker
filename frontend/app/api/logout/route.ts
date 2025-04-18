@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  console.log("Logging out...");
+  console.log(`Logging out from ${req.url}...`);
   const backendRes = await fetch(`${apiURL}/logout`, {
     method: "POST",
   });

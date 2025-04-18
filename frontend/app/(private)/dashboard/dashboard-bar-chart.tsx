@@ -18,11 +18,7 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-const CustomTooltip: React.FC<CustomTooltipProps> = ({
-  active,
-  payload,
-  label,
-}) => {
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-neutral-900 p-4 rounded shadow border border-purple-200">
@@ -91,7 +87,7 @@ export default function CustomBarChart({
     });
 
     // Convert map to array and sort by date (newest first)
-    let result = Object.values(monthlyMap);
+    const result = Object.values(monthlyMap);
     result.sort((a, b) => b.timestamp - a.timestamp);
 
     // Limit to the specified number of months
@@ -221,7 +217,7 @@ export default function CustomBarChart({
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value, index) => {
+              tickFormatter={(_, index) => {
                 if (!enhancedData[index]) return "";
                 const item = enhancedData[index];
                 return `${item.month} ${String(item.year).slice(-2)}`;
@@ -230,7 +226,7 @@ export default function CustomBarChart({
             <YAxis tickFormatter={formatYAxis} />
             <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Bar dataKey="value" fill="var(--chart-2)" radius={8}>
-              {enhancedData.map((entry, index) => (
+              {enhancedData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={getBarColors()[index]} />
               ))}
             </Bar>

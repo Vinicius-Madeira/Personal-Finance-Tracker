@@ -58,7 +58,8 @@ export default async function IncomesTab() {
       {(incomes.length === 0 && (
         <div className="w-fit mx-auto my-16">
           <p className="font-bold text-4xl">
-            Clique em <span className="text-primary">"Nova Renda"</span> para
+            Clique em{" "}
+            <span className="text-primary">&quot;Nova Renda&quot;</span> para
             começar a gerenciar suas rendas.
           </p>
         </div>

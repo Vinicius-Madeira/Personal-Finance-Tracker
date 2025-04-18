@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
-import { CalendarIcon, ListPlus } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -86,7 +86,7 @@ export default function DashboardAddForm({
     if (state.status === "error") {
       showErrorToast(state.message, "Por favor, tente novamente.");
     }
-  }, [state]);
+  }, [state, form]);
 
   return (
     <Dialog>
@@ -193,7 +193,7 @@ export default function DashboardAddForm({
             <FormField
               control={form.control}
               name="valor"
-              render={({ field }) => (
+              render={({}) => (
                 <FormItem>
                   <FormLabel>Valor</FormLabel>
                   <FormControl>

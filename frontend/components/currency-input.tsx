@@ -21,7 +21,6 @@ export const BRLCurrencyInput: React.FC<CurrencyInputProps> = ({
   label,
   className,
   inputClassName,
-  errorClassName,
   ...props
 }) => {
   const {
@@ -57,7 +56,7 @@ export const BRLCurrencyInput: React.FC<CurrencyInputProps> = ({
     if (cents === 0) return "0,00";
 
     // Convert to string and ensure it has at least 3 digits
-    let valueStr = cents.toString().padStart(3, "0");
+    const valueStr = cents.toString().padStart(3, "0");
 
     // Extract decimal part (last 2 digits)
     const decimalPart = valueStr.slice(-2);

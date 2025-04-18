@@ -58,7 +58,8 @@ export default async function ExpensesTab() {
       {(expenses.length === 0 && (
         <div className="w-fit mx-auto my-16">
           <p className="font-bold text-4xl">
-            Clique em <span className="text-primary">"Novo Gasto"</span> para
+            Clique em{" "}
+            <span className="text-primary">&quot;Novo Gasto&quot;</span> para
             começar a gerenciar seus gastos.
           </p>
         </div>

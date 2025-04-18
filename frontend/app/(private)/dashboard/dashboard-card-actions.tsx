@@ -58,7 +58,7 @@ export default function DashboardCardActions({
   }
 
   function closeMenu(open: boolean) {
-    !open && setMenuOpen(false);
+    if (!open) setMenuOpen(false);
   }
 
   useEffect(() => {
