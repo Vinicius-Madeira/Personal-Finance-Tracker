@@ -26,13 +26,11 @@ This project aims to help users keep track of their profits and expenditures alo
     - [Database Setup (with Docker)](#database-setup-with-docker)
     - [Backend Setup](#backend-setup)
       - [Using IntelliJ IDEA](#using-intellij-idea)
-      - [Using Eclipse](#using-eclipse)
     - [Frontend Setup](#frontend-setup)
   - [Running the Application](#running-the-application)
     - [Start the Database (if not already running)](#start-the-database-if-not-already-running)
     - [Start the Backend](#start-the-backend)
       - [Using IntelliJ IDEA](#using-intellij-idea-1)
-      - [Using Eclipse](#using-eclipse-1)
     - [Start the Frontend](#start-the-frontend)
   - [Development Notes](#development-notes)
   - [Troubleshooting](#troubleshooting)
@@ -131,22 +129,26 @@ spring.application.name=rastreamento-de-gastos
 
 server.port=8080
 
-spring.datasource.url=jdbc:mysql://localhost:3306/rastreamento-de-gastos?useTimezone=true&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=root
+spring.config.import=file:.env[.properties]
+
+spring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useTimezone=true&serverTimezone=UTC
+spring.datasource.username=${MYSQL_USERNAME}
+spring.datasource.password=${MYSQL_PASSWORD}
 spring.datasource.driver-class=com.mysql.cj.jdbc.Driver
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
 
-#### Using Eclipse
+7. Create a `.env` file at the root of the backend project, and add these variables:
 
-1. Open Eclipse
-2. Go to File -> Import -> Maven -> Existing Maven Projects
-3. Navigate to the `backend` folder of the project
-4. Click "Finish" and wait for Eclipse to import and build the project
-5. Configure application properties as described above
+```properties
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_DATABASE=rastreamento-de-gastos
+MYSQL_USERNAME=root
+MYSQL_PASSWORD=root
+```
 
 ### Frontend Setup
 
@@ -196,14 +198,6 @@ cd backend
 1. Open the project in IntelliJ IDEA
 2. Find the main application class in `src/main/java/RastreamentoDeGastosApplication.java` (it has `@SpringBootApplication` annotation)
 3. Right-click on this class and select "Run"
-
-#### Using Eclipse
-
-1. Open the project in Eclipse
-2. Find the main application class in `src/main/java/RastreamentoDeGastosApplication.java` (it has `@SpringBootApplication` annotation)
-3. Right-click on this class and select "Run As" -> "Java Application"
-
-The backend will be available at `http://localhost:8080`
 
 ### Start the Frontend
 
