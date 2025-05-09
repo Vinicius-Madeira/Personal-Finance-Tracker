@@ -11,10 +11,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, UserRoundPen } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import ProfileUpdateForm from "./profile-update-form";
 
 interface ProfileMenuProps {
   userData: User;
@@ -55,15 +55,7 @@ export default function ProfileMenu({ userData }: ProfileMenuProps) {
           </span>
         </div>
         <Separator className="mt-3 mb-2" />
-        <Button
-          variant="ghost"
-          onClick={() => {
-            toast("Esta funcionalidade estará disponível na versão 2.0");
-          }}
-        >
-          <UserRoundPen />
-          Perfil
-        </Button>
+        <ProfileUpdateForm userData={userData} />
         <Button variant="ghost" onClick={onClick}>
           <LogOut />
           {pending ? "Saindo..." : "Sair"}

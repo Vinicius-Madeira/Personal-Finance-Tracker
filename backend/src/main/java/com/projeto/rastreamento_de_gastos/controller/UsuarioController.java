@@ -1,18 +1,14 @@
 package com.projeto.rastreamento_de_gastos.controller;
 
-import java.security.NoSuchAlgorithmException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.projeto.rastreamento_de_gastos.entity.Usuario;
 import com.projeto.rastreamento_de_gastos.exceptions.CriptoExistsException;
 import com.projeto.rastreamento_de_gastos.exceptions.EmailExistsException;
-import com.projeto.rastreamento_de_gastos.exceptions.ServiceExc;
 import com.projeto.rastreamento_de_gastos.services.usuario.ServiceUsuario;
 import com.projeto.rastreamento_de_gastos.util.Util;
 
@@ -93,5 +89,37 @@ public class UsuarioController {
         usuarioLogado.setSenha(null);
 
         return ResponseEntity.ok(usuarioLogado);
+    }
+    @PutMapping("/profile")
+    public ResponseEntity<?> atualizarPerfil(@RequestBody Usuario usuarioAtualizado, HttpSession session) {
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+
+        if (usuarioLogado == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Usuário não está logado.");
+        }
+
+        // Buscar o usuário no banco (por ID)
+        Usuario usuarioExistente = serviceUsuario.buscarPorId(usuarioLogado.getId());
+        if (usuarioExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Confirmar se o usuário recebido é o mesmo do que está logado
+        if (!usuarioExistente.getId().equals(usuarioAtualizado.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // Atualizar os campos (nome, usuário e email)
+        usuarioExistente.setName(usuarioAtualizado.getName());
+        usuarioExistente.setUser(usuarioAtualizado.getUser());
+
+        Usuario updatedUser = serviceUsuario.updateUser(usuarioExistente);
+
+        // Atualiza a sessão também para refletir as mudanças
+        updatedUser.setSenha(null);
+        session.setAttribute("usuarioLogado", updatedUser);
+
+        return ResponseEntity.ok(updatedUser);
     }
 }
