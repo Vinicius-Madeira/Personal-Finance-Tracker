@@ -11,6 +11,7 @@ import { ToastHandler } from "./toast-handler";
 import { createExpense } from "./actions/createExpense";
 import { updateExpense } from "./actions/updateExpense";
 import { deleteExpense } from "./actions/deleteExpense";
+import DownloadStatistics from "./download-statistics";
 
 export default async function ExpensesTab() {
   const cookieStore = await cookies();
@@ -53,6 +54,7 @@ export default async function ExpensesTab() {
         buttonText="Novo Gasto"
         createAction={createExpense}
       />
+      <DownloadStatistics buttonText="Baixar Relatório" />
       <ToastHandler items={expenses.length} />
 
       {(expenses.length === 0 && (

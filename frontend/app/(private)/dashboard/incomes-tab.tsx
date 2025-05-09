@@ -11,6 +11,7 @@ import { ToastHandler } from "./toast-handler";
 import { createIncome } from "./actions/createIncome";
 import { updateIncome } from "./actions/updateIncome";
 import { deleteIncome } from "./actions/deleteIncome";
+import DownloadStatistics from "./download-statistics";
 
 export default async function IncomesTab() {
   const cookieStore = await cookies();
@@ -53,6 +54,7 @@ export default async function IncomesTab() {
         buttonText="Nova Renda"
         createAction={createIncome}
       />
+      <DownloadStatistics buttonText="Baixar Relatório" />
       <ToastHandler items={incomes.length} />
 
       {(incomes.length === 0 && (
