@@ -41,5 +41,13 @@ public class ServiceUsuario {
     public Usuario findByEmail(String email) {
         return repositorioUsuario.findByEmail(email);
     }
-    
+
+    // adicionado para salvar alteração de perfil - confirmar
+    public Usuario buscarPorId(Long id) {
+        return repositorioUsuario.findById(id).orElse(null);
+    }
+
+    public Usuario updateUser(Usuario usuario) {
+        return repositorioUsuario.save(usuario);
+    }
 }
