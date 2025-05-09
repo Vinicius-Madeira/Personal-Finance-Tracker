@@ -36,6 +36,7 @@ import Spinner from "@/components/spinner";
 import { showErrorToast } from "@/components/error-toast";
 import { showSuccessToast } from "@/components/success-toast";
 import { BRLCurrencyInput } from "@/components/currency-input";
+import { ListPlus } from "lucide-react";
 
 const defaultValues = {
   titulo: "",
@@ -91,7 +92,9 @@ export default function DashboardAddForm({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="absolute left-100 top-24">{buttonText}</Button>
+        <Button className="absolute left-100 top-24">
+          {buttonText} <ListPlus />
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-100">
         <DialogHeader>
